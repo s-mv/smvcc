@@ -1,17 +1,20 @@
 TITLE = smvcc
 
-OBJECTS = ./build/compiler.o ./build/cprocess.o
+CC = clang
+
+OBJECTS = ./build/compiler.o ./build/cprocess.o ./build/list.o
 INCLUDES = -I ./include
+CLFAGS = -std=c99
 
 # this is for the source-header pairs helper
 name = test
 
 all: ${OBJECTS}
-	@clang src/main.c ${INCLUDES} ${OBJECTS}  -o ./$(TITLE)
+	@$(CC) src/main.c ${INCLUDES} ${OBJECTS} ${CLFAGS} -o ./$(TITLE)
 
 # build objects
 ./build/%.o: ./src/%.c
-	@clang $< $(INCLUDES) -o $@ -g -c
+	@$(CC) $< $(INCLUDES) ${CLFAGS} -o $@ -c
 
 clean:
 	@rm ./$(TITLE)

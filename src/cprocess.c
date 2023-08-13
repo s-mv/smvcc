@@ -19,4 +19,6 @@ CompileProcess *compile_process_create(const char *inpath, const char *outpath,
   proc->flags = flags;
   proc->file.fp = fp;
   proc->out_fp = out_fp;
+
+  return proc;
 }
