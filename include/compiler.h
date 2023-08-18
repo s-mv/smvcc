@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "token.h"
+
 typedef enum CompilerStatus {
   COMPILER_OK,
   COMPILER_ERROR,
@@ -12,6 +14,7 @@ typedef enum CompilerStatus {
 typedef struct CompileProcess {
   int flags;
 
+  Position pos;
   struct InputFile {
     FILE *fp;
     const char *path;

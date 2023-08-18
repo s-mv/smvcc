@@ -16,7 +16,13 @@ int main(int argc, char **argv) {
   CompilerStatus success = compile_file(argv[1], argv[2], 0);
 
   if (success == COMPILER_ERROR) {
-    printf("errors handling code\n");
+    printf("errors handling code...\n");
+    return 1;
+  }
+  // ...otherwise
+  
+  if(success != COMPILER_OK) {
+    printf("unknown error while compiling...\n");
     return 1;
   }
   // ...otherwise
