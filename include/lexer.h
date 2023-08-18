@@ -14,6 +14,11 @@ typedef char (*LEX_PROCESS_NEXT_CHAR)(Lexer *lexer);
 typedef char (*LEX_PROCESS_PEEK_CHAR)(Lexer *lexer);
 typedef void (*LEX_PROCESS_PUSH_CHAR)(Lexer *lexer, char c);
 
+typedef enum LexerStatus {
+  LEXER_OK = 0,
+  LEXER_ERROR,
+} LexerStatus;
+
 typedef struct LexerFunctions {
   LEX_PROCESS_NEXT_CHAR next_char;
   LEX_PROCESS_PEEK_CHAR peek_char;
@@ -40,5 +45,9 @@ typedef struct Lexer {
 Lexer lexer_create(CompileProcess *compiler, LexerFunctions *fns,
                    void *private_data);
 void lexer_free(Lexer *l);
+
+LexerStatus lex(CompileProcess *compiler);
+
+extern LexerFunctions default_lexer_fns;
 
 #endif

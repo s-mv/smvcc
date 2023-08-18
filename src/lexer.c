@@ -1,5 +1,11 @@
 #include "lexer.h"
 
+#include "compiler.h"
+
+LexerStatus lex(CompileProcess *compiler) { return LEXER_OK; }
+
+// the less imporant functions :)
+
 char lexer_next_char(Lexer *l) {
   CompileProcess *compiler = l->compiler;
   compiler->pos.col += 1;
@@ -26,7 +32,7 @@ void lexer_push_char(Lexer *l, char c) {
   ungetc(c, compiler->file.fp);  // so nifty!
 }
 
-LexerFunctions lexer_fns = (LexerFunctions){
+LexerFunctions default_lexer_fns = (LexerFunctions){
     .next_char = lexer_next_char,
     .peek_char = lexer_peek_char,
     .push_char = lexer_push_char,
@@ -35,7 +41,7 @@ LexerFunctions lexer_fns = (LexerFunctions){
 Lexer lexer_create(CompileProcess *compiler, LexerFunctions *fns,
                    void *private_data) {
   return (Lexer){
-      .function = &lexer_fns,
+      .function = &default_lexer_fns,
       .tokens = list_create(sizeof(Token)),
       .compiler = compiler,
       .private = private_data,
