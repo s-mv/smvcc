@@ -11,7 +11,7 @@ typedef struct list {
   int cap;
 } list;
 
-list *list_create(int size);
+list list_create(int size);
 void list_free(list *ls);
 
 void *list_at(list *ls, int index);

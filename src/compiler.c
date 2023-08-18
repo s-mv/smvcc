@@ -14,6 +14,9 @@ CompilerStatus compile_file(const char *inpath, const char *outpath, int flags) 
   // code generation 
 
   // finally free the process
+
+  fclose(proc->file.fp);
+  fclose(proc->out_fp);
   free(proc);
 
   return COMPILER_OK;

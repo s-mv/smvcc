@@ -1,14 +1,11 @@
 #include "list.h"
 
-list *list_create(int size) {
-  list *ls;
-
-  ls->cap = 0;
-  ls->len = 0;
-
-  ls->size = size;
-
-  return ls;
+list list_create(int size) {
+  return (list){
+      .cap = 0,
+      .len = 0,
+      .size = size,
+  };
 }
 void list_free(list *ls) {
   free(ls->data);
