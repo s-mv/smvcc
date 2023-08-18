@@ -2,9 +2,14 @@ TITLE = smvcc
 
 CC = clang
 
-OBJECTS = ./build/compiler.o ./build/cprocess.o ./build/list.o
+OBJECTS = ./build/compiler.o \
+					./build/cprocess.o \
+					./build/list.o \
+					./build/token.o \
+					./build/lexer.o
+
 INCLUDES = -I ./include
-CLFAGS = -std=c99
+CLFAGS = -std=c11
 
 # this is for the source-header pairs helper
 name = test
