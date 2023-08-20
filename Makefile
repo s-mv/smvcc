@@ -4,12 +4,12 @@ CC = clang
 
 OBJECTS = ./build/compiler.o \
 					./build/cprocess.o \
+					./build/lexer.o \
 					./build/list.o \
-					./build/token.o \
-					./build/lexer.o
+					./build/token.o
 
 INCLUDES = -I ./include
-CLFAGS = -std=c11
+CLFAGS = -std=c11 -g
 
 # this is for the source-header pairs helper
 name = test

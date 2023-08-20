@@ -33,8 +33,9 @@ typedef struct Lexer {
   // how many brackets deep are we?
   // I don't want to waste time implementing a stack just yet
   int current_expr_count;
-  // TODO define struct buffer
-  // buffer paren_buffer;
+  // TODO define struct buffer (MAYBE)
+  // for now this is going to be a list
+  List *paren_list;
 
   LexerFunctions *function;
 
@@ -46,8 +47,13 @@ Lexer lexer_create(CompileProcess *compiler, LexerFunctions *fns,
                    void *private_data);
 void lexer_free(Lexer *l);
 
-LexerStatus lex(CompileProcess *compiler);
+LexerStatus lex(Lexer *l);
+
+char peek_char();
+char next_char();
+void push_char(char c);
 
 extern LexerFunctions default_lexer_fns;
+extern Lexer *lexer;
 
 #endif

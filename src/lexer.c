@@ -1,20 +1,41 @@
 #include "lexer.h"
 
 #include "compiler.h"
+#include "list.h"
+#include "token.h"
 
-LexerStatus lex(CompileProcess *compiler) { return LEXER_OK; }
+Lexer *lexer;
+
+char peek_char() { return lexer->function->peek_char(lexer); }
+char next_char() { return lexer->function->next_char(lexer); }
+void push_char(char c) { return lexer->function->push_char(lexer, c); }
+
+LexerStatus lex(Lexer *l) {
+  // re-init the lexer
+  l->current_expr_count = 0;
+  l->paren_list = NULL;
+  lexer = l;
+
+  Token *token = token_read_next();
+  while (token) {
+    list_push(&l->tokens, token);
+    token = token_read_next();
+  }
+
+  return LEXER_OK;
+}
 
 // the less imporant functions :)
 
 char lexer_next_char(Lexer *l) {
   CompileProcess *compiler = l->compiler;
-  compiler->pos.col += 1;
 
   char c = getc(compiler->file.fp);
   if (c == '\n') {
     compiler->pos.line += 1;
     compiler->pos.col = 1;
-  }
+  } else
+    compiler->pos.col += 1;
 
   return c;
 }

@@ -1,1 +1,54 @@
 #include "token.h"
+
+#include "lexer.h"
+#include "list.h"
+
+static Token token;
+
+Token *token_create(Token *t) {
+  memcpy(&token, t, sizeof(Token));
+  t->pos = lexer->pos;
+  return &token;
+}
+
+static Token *token_make_number() {
+  const char *num = NULL;
+  List list = list_create(sizeof(char));
+
+  for (char c = next_char(); '0' <= c && c <= '9'; c = next_char()) {
+    list_push(&list, &c);
+  }
+  // now list->data contains a number that we assign to token
+
+  token_create(&token);
+
+  token.llnum = atoll((const char *)list.data);
+
+  list_free(&list);
+
+  printf("number token: %llu\n", token.llnum);
+
+  return &token;
+}
+
+Token *token_read_next() {
+  Token *t = NULL;
+  char c = peek_char();
+
+  // check for numbers
+  if ('0' <= c && c <= '9') {
+    t = token_make_number();
+  }
+
+  switch (c) {
+    case '\n':
+    case ' ':
+    case '\0':
+    case EOF:
+      break;
+    default:
+      compiler_error(lexer, "Unexpected token.");
+  }
+
+  return t;
+}

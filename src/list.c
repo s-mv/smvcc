@@ -1,9 +1,11 @@
 #include "list.h"
 
+#include <stdio.h>
+
 List list_create(int size) {
   return (List){
-      .cap = 0,
       .len = 0,
+      .cap = 0,
       .size = size,
   };
 }

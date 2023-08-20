@@ -4,4 +4,6 @@ build/*
 smvcc
 
 # temporary
+test.c
+test
 */buffer.*

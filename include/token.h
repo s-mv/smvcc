@@ -44,4 +44,6 @@ typedef struct Token {
   const char *between_brackets;
 } Token;
 
+Token *token_read_next();
+
 #endif
