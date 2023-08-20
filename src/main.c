@@ -20,8 +20,8 @@ int main(int argc, char **argv) {
     return 1;
   }
   // ...otherwise
-  
-  if(success != COMPILER_OK) {
+
+  if (success != COMPILER_OK) {
     printf("unknown error while compiling...\n");
     return 1;
   }

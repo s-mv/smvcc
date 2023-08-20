@@ -28,7 +28,7 @@ LexerStatus lex(Lexer *l) {
 // the less imporant functions :)
 
 char lexer_next_char(Lexer *l) {
-  CompileProcess *compiler = l->compiler;
+  Compiler *compiler = l->compiler;
 
   char c = getc(compiler->file.fp);
   if (c == '\n') {
@@ -41,7 +41,7 @@ char lexer_next_char(Lexer *l) {
 }
 
 char lexer_peek_char(Lexer *l) {
-  CompileProcess *compiler = l->compiler;
+  Compiler *compiler = l->compiler;
   char c = getc(compiler->file.fp);
   // this is equivalent of uh... un-pop
   ungetc(c, compiler->file.fp);
@@ -49,7 +49,7 @@ char lexer_peek_char(Lexer *l) {
 }
 
 void lexer_push_char(Lexer *l, char c) {
-  CompileProcess *compiler = l->compiler;
+  Compiler *compiler = l->compiler;
   ungetc(c, compiler->file.fp);  // so nifty!
 }
 
@@ -59,7 +59,7 @@ LexerFunctions default_lexer_fns = (LexerFunctions){
     .push_char = lexer_push_char,
 };
 
-Lexer lexer_create(CompileProcess *compiler, LexerFunctions *fns,
+Lexer lexer_create(Compiler *compiler, LexerFunctions *fns,
                    void *private_data) {
   return (Lexer){
       .function = &default_lexer_fns,

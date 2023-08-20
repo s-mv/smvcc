@@ -15,7 +15,7 @@ typedef enum CompilerStatus {
   COMPILER_ERROR,
 } CompilerStatus;
 
-typedef struct CompileProcess {
+typedef struct Compiler {
   int flags;
 
   Position pos;
@@ -26,12 +26,12 @@ typedef struct CompileProcess {
 
   FILE *out_fp;
 
-} CompileProcess;
+} Compiler;
 
 void compiler_error(Lexer *l, const char *message, ...);
 void compiler_warning(Lexer *l, const char *message, ...);
 CompilerStatus compile_file(const char *inpath, const char *outpath, int flags);
-CompileProcess *compile_process_create(const char *inpath, const char *outpath,
+Compiler *compiler_create(const char *inpath, const char *outpath,
                                        int flags);
 
 #endif

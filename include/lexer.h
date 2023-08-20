@@ -28,7 +28,7 @@ typedef struct LexerFunctions {
 typedef struct Lexer {
   Position pos;
   List tokens;
-  CompileProcess *compiler;
+  Compiler *compiler;
 
   // how many brackets deep are we?
   // I don't want to waste time implementing a stack just yet
@@ -43,7 +43,7 @@ typedef struct Lexer {
   void *private;
 } Lexer;
 
-Lexer lexer_create(CompileProcess *compiler, LexerFunctions *fns,
+Lexer lexer_create(Compiler *compiler, LexerFunctions *fns,
                    void *private_data);
 void lexer_free(Lexer *l);
 

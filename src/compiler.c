@@ -4,6 +4,54 @@
 
 #include "lexer.h"
 
+Compiler *compiler_create(const char *inpath, const char *outpath, int flags) {
+  // read the file
+  FILE *fp = fopen(inpath, "r");
+  if (!fp) return NULL;
+  // init the output
+  FILE *out_fp = NULL;
+  if (outpath) {
+    out_fp = fopen(outpath, "w");
+    if (!out_fp) return NULL;
+  }
+
+  Compiler *compiler = malloc(sizeof(Compiler));
+
+  compiler->flags = flags;
+  compiler->file.fp = fp;
+  compiler->out_fp = out_fp;
+
+  return compiler;
+}
+
+CompilerStatus compile_file(const char *inpath, const char *outpath,
+                            int flags) {
+  Compiler *compiler = compiler_create(inpath, outpath, flags);
+  if (!compiler) return COMPILER_ERROR;
+
+  Lexer lexer = lexer_create(compiler, &default_lexer_fns, NULL);
+  if (!lex(&lexer)) {
+    return COMPILER_ERROR;
+  }
+
+  /* TODO */
+  // parsing
+
+  /* TODO */
+  // code generation
+
+  // finally free the process
+
+  lexer_free(&lexer);
+
+  fclose(compiler->file.fp);
+  fclose(compiler->out_fp);
+
+  free(compiler);
+
+  return COMPILER_OK;
+}
+
 void compiler_error(Lexer *l, const char *message, ...) {
   fprintf(stderr, "%s:%i:%i: error:\n", l->pos.fname, l->pos.line, l->pos.col);
 
@@ -27,32 +75,4 @@ void compiler_warning(Lexer *l, const char *message, ...) {
   va_end(args);
 
   printf("\n");
-}
-
-CompilerStatus compile_file(const char *inpath, const char *outpath,
-                            int flags) {
-  CompileProcess *proc = compile_process_create(inpath, outpath, flags);
-  if (!proc) return COMPILER_ERROR;
-
-  Lexer lexer = lexer_create(proc, &default_lexer_fns, NULL);
-  if (!lex(&lexer)) {
-    return COMPILER_ERROR;
-  }
-
-  /* TODO */
-  // parsing
-
-  /* TODO */
-  // code generation
-
-  // finally free the process
-
-  lexer_free(&lexer);
-
-  fclose(proc->file.fp);
-  fclose(proc->out_fp);
-  
-  free(proc);
-
-  return COMPILER_OK;
 }
