@@ -26,7 +26,7 @@ typedef struct LexerFunctions {
 } LexerFunctions;
 
 typedef struct Lexer {
-  Position pos;
+  Position *pos;
   List tokens;
   Compiler *compiler;
 

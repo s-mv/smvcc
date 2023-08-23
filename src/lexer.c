@@ -61,17 +61,15 @@ LexerFunctions default_lexer_fns = (LexerFunctions){
 
 Lexer lexer_create(Compiler *compiler, LexerFunctions *fns,
                    void *private_data) {
+  compiler->pos = (Position){.col = 1, .line = 1, .fname = compiler->file.path};
+
   return (Lexer){
       .function = &default_lexer_fns,
       .tokens = list_create(sizeof(Token)),
       .compiler = compiler,
       .private = private_data,
 
-      .pos =
-          (Position){
-              .line = 1,
-              .col = 1,
-          },
+      .pos = &compiler->pos,
   };
 }
 

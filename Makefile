@@ -8,7 +8,7 @@ OBJECTS = ./build/compiler.o \
 					./build/token.o
 
 INCLUDES = -I ./include
-CLFAGS = -std=c11
+CLFAGS = -std=c11 -g -O0
 
 # this is for the source-header pairs helper
 name = test

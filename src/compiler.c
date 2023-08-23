@@ -17,6 +17,7 @@ Compiler *compiler_create(const char *inpath, const char *outpath, int flags) {
 
   Compiler *compiler = malloc(sizeof(Compiler));
 
+  compiler->file.path = inpath;
   compiler->flags = flags;
   compiler->file.fp = fp;
   compiler->out_fp = out_fp;
@@ -30,7 +31,7 @@ CompilerStatus compile_file(const char *inpath, const char *outpath,
   if (!compiler) return COMPILER_ERROR;
 
   Lexer lexer = lexer_create(compiler, &default_lexer_fns, NULL);
-  if (!lex(&lexer)) {
+  if (lex(&lexer) != LEXER_OK) {
     return COMPILER_ERROR;
   }
 
@@ -53,7 +54,7 @@ CompilerStatus compile_file(const char *inpath, const char *outpath,
 }
 
 void compiler_error(Lexer *l, const char *message, ...) {
-  fprintf(stderr, "%s:%i:%i: error:\n", l->pos.fname, l->pos.line, l->pos.col);
+  fprintf(stderr, "%s:%i:%i: error:\n", l->pos->fname, l->pos->line, l->pos->col);
 
   va_list args;
   va_start(args, message);
@@ -66,8 +67,8 @@ void compiler_error(Lexer *l, const char *message, ...) {
 }
 
 void compiler_warning(Lexer *l, const char *message, ...) {
-  fprintf(stderr, "%s:%i:%i: warning:\n", l->pos.fname, l->pos.line,
-          l->pos.col);
+  fprintf(stderr, "%s:%i:%i: warning:\n", l->pos->fname, l->pos->line,
+          l->pos->col);
 
   va_list args;
   va_start(args, message);

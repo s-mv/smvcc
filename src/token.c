@@ -7,7 +7,7 @@ static Token token;
 
 Token *token_create(Token *t) {
   memcpy(&token, t, sizeof(Token));
-  t->pos = lexer->pos;
+  t->pos = *lexer->pos;
   return &token;
 }
 
@@ -33,21 +33,36 @@ static Token *token_make_number() {
 
 Token *token_read_next() {
   Token *t = NULL;
+  // last token
   char c = peek_char();
 
   // check for numbers
   if ('0' <= c && c <= '9') {
     t = token_make_number();
+    return t;
   }
 
+  // TODO:NEXT
+  // strings
+
   switch (c) {
-    case '\n':
     case ' ':
-    case '\0':
-    case EOF:
+    case '\t': {
+      // TODO make this more efficient
+      Token *temp = list_peek(&lexer->tokens);
+      temp->whitespace = true;
+    }
+    case '\n': {
+      t->type = NEWLINE;
       break;
-    default:
-      compiler_error(lexer, "Unexpected token.");
+    }
+    case EOF: {
+      break;
+    }
+    default: {
+      compiler_error(lexer, "Unexpected token: (char:%c).", c);
+      break;
+    }
   }
 
   return t;
