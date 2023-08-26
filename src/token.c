@@ -5,6 +5,11 @@
 
 static Token token;
 
+static bool is_operator(char c);
+static bool is_lonely_op(char c);
+static bool is_eq(const char *str1, const char *str2);
+static bool is_keyword(const char *str);
+
 Token *token_create(Token *t) {
   memcpy(&token, t, sizeof(Token));
   t->pos = *lexer->pos;
@@ -31,10 +36,20 @@ static Token *token_make_number() {
   return &token;
 }
 
+// TODO
+static Token *token_make_operator(char op) { char c = next_char(); }
+
+static Token *token_make_lonely_op(char op) {
+  Token *t;
+  t->type = SYMBOL;
+}
+
+static Token *token_make_keyword(char *str) {}
+
 Token *token_read_next() {
   Token *t = NULL;
   // last token
-  char c = peek_char();
+  const char c = peek_char();
 
   // check for numbers
   if ('0' <= c && c <= '9') {
@@ -42,6 +57,23 @@ Token *token_read_next() {
     return t;
   }
 
+  // check for lonely operators
+  if (is_lonely_op(c)) {
+    t = token_make_lonely_op(c);
+    return;
+  }
+  // check for non-lonely operators
+  if (is_operator(c)) {
+    t = token_make_operator(c);
+    return;
+  }
+
+  // check for non-lonely operators
+  for (int i = 0; i < LONELY_OP_LEN; i++) {
+    if (c != lonely_op[i]) continue;
+    t = token_make_lonely_op(c);
+    return;
+  }
   // TODO:NEXT
   // strings
 
@@ -66,4 +98,22 @@ Token *token_read_next() {
   }
 
   return t;
+}
+
+static bool is_operator(char c) {
+  for (int i = 0; i < LONELY_OP_LEN; i++) {
+    if (c == lonely_op[i]) return true;
+  }
+  return false;
+}
+
+static bool is_lonely_op(char c) {
+  for (int i = 0; i < OPERATORS_LEN; i++) {
+    if (c == operators[i]) return true;
+  }
+  return false;
+}
+
+static bool is_keyword(const char *str) {
+  // TODO
 }
