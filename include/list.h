@@ -13,6 +13,7 @@ typedef struct List {
 
 List list_create(int size);
 void list_free(List *ls);
+void list_grow(List *list, int cap);
 
 void *list_at(List *ls, int index);
 
