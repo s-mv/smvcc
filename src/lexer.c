@@ -72,6 +72,32 @@ static Token *token_make_lonely_op(char op) {
 
 static Token *token_make_keyword(char *str) { return NULL; }
 
+static Token *token_make_comment_oneline() {
+  List ls = list_create(sizeof(char));
+  for (char c = next_char(); c != '\n' && c != EOF; c = next_char())
+    ;
+  // ownership of ls.data goes to token
+  return token_create(&(Token){.type = COMMENT, .str = ls.data});
+}
+
+static Token *token_make_comment_multiline() {
+  List ls = list_create(sizeof(char));
+  char c;
+  for (c = next_char(); c != EOF; c = next_char()) {
+    if (c == '*') {
+      next_char();
+      if (peek_char() == '/') break;
+    }
+  }
+
+  if (c == EOF) {
+    compiler_error(lexer, "Multiline comment left open.");
+    return NULL;  // the program will exit but eh common courtesy
+  }
+
+  return token_create(&(Token){.type = COMMENT, .str = ls.data});
+}
+
 static Token *token_make_string(char start, char end) {
   List ls = list_create(sizeof(char));
   char c = next_char();
@@ -140,6 +166,17 @@ Token *token_read_next() {
       // TODO make this more efficient
       Token *temp = list_peek(&lexer->tokens);
       temp->whitespace = true;
+    }
+    case '/': {
+      char c = peek_char();
+      if (c == '/') {
+        next_char();
+        token_make_comment_oneline();
+      } else if (c == '*') {
+        next_char();
+        token_make_comment_multiline();
+      }
+      break;
     }
     case '\n': {
       next_char();
