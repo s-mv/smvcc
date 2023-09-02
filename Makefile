@@ -4,8 +4,7 @@ CC = clang
 
 OBJECTS = ./build/compiler.o \
 					./build/list.o \
-					./build/lexer.o \
-					./build/token.o
+					./build/lexer.o
 
 INCLUDES = -I ./include
 CLFAGS = -std=c11 -g -O0
