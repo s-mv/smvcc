@@ -142,6 +142,8 @@ Token *token_read_next() {
       temp->whitespace = true;
     }
     case '\n': {
+      next_char();
+      t = malloc(sizeof(Token));
       t->type = NEWLINE;
       break;
     }
