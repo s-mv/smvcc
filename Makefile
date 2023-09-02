@@ -3,8 +3,8 @@ TITLE = smvcc
 CC = clang
 
 OBJECTS = ./build/compiler.o \
-					./build/lexer.o \
 					./build/list.o \
+					./build/lexer.o \
 					./build/token.o
 
 INCLUDES = -I ./include

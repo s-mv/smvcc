@@ -43,8 +43,7 @@ typedef struct Lexer {
   void *private;
 } Lexer;
 
-Lexer lexer_create(Compiler *compiler, LexerFunctions *fns,
-                   void *private_data);
+Lexer lexer_create(Compiler *compiler, LexerFunctions *fns, void *private_data);
 void lexer_free(Lexer *l);
 
 LexerStatus lex(Lexer *l);

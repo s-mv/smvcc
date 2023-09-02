@@ -4,21 +4,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-// strictly non-lonely operators/operator constituents
-// NOTE: lacks / for a GOOD REASON
-const char operators[] = {
-    '+', '=', '<', '>', '&', '%', '-', '~', ':', ',', '!', '^', '|',
-};
-
-// lonely operators:
-// a lonely operator is an operator which is ALWAYS single-character
-const char lonely_op[] = {
-    '(', ')', '[', '{', '}', '.', '*', '?',
-};
-
-const int OPERATORS_LEN = sizeof(operators) / sizeof(*operators);
-const int LONELY_OP_LEN = sizeof(lonely_op) / sizeof(*lonely_op);
-
 typedef enum TokenType {
   IDENTIFIER,
   OPERATOR,

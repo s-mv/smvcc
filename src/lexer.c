@@ -73,4 +73,11 @@ Lexer lexer_create(Compiler *compiler, LexerFunctions *fns,
   };
 }
 
-void lexer_free(Lexer *l) { list_free(&l->tokens); }
+void lexer_free(Lexer *l) {
+  // free string token data
+  for (int i = 0; i < l->tokens.len; i++) {
+    Token *token = (Token *)list_at(&l->tokens, i);
+    if (token->type == STRING) free((void *)token->str);
+  }
+  list_free(&l->tokens);
+}

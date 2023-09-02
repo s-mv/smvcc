@@ -55,7 +55,7 @@ void *list_peek(List *ls) {
 static int smallest_pow_2(int n) {
   const int size = sizeof(int);
   int ret = 1;
-  while(n > 0) {
+  while (n > 0) {
     ret <<= 1;
     n >>= 1;
   }

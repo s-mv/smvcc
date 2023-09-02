@@ -3,11 +3,26 @@
 #include "lexer.h"
 #include "list.h"
 
+#define OPERATORS_LEN (13)
+#define LONELY_OP_LEN (8)
+
+// strictly non-lonely operators/operator constituents
+// NOTE: lacks / for a GOOD REASON
+static char operators[OPERATORS_LEN] = {
+    '+', '=', '<', '>', '&', '%', '-', '~', ':', ',', '!', '^', '|',
+};
+
+// lonely operators:
+// a lonely operator is an operator which is ALWAYS single-character
+static char lonely_op[LONELY_OP_LEN] = {
+    '(', ')', '[', '{', '}', '.', '*', '?',
+};
+
 static Token token;
 
 static bool is_operator(char c);
 static bool is_lonely_op(char c);
-static bool is_eq(const char *str1, const char *str2);
+static inline bool str_eq(const char *str1, const char *str2);
 static bool is_keyword(const char *str);
 
 Token *token_create(Token *t) {
@@ -30,21 +45,53 @@ static Token *token_make_number() {
   token.llnum = atoll((const char *)list.data);
 
   list_free(&list);
-
-  printf("number token: %llu\n", token.llnum);
-
   return &token;
 }
 
 // TODO
-static Token *token_make_operator(char op) { char c = next_char(); }
+static Token *token_make_operator(char op) {
+  char c = next_char();
+  return NULL;
+}
 
 static Token *token_make_lonely_op(char op) {
   Token *t;
+  token_create(t);
+
   t->type = SYMBOL;
+
+  return t;
 }
 
-static Token *token_make_keyword(char *str) {}
+static Token *token_make_keyword(char *str) { return NULL; }
+
+static Token *token_make_string(char start, char end) {
+  List ls = list_create(sizeof(char));
+  char c = next_char();
+
+  for (c = next_char(); c != end && c != EOF; c = next_char()) {
+    if (c == '\\') {
+      // handle an escape character (TODO)
+      continue;
+    }
+    // ...otherwise
+    list_push(&ls, &c);
+  }
+
+  if (c == EOF) {
+    list_free(&ls);
+    compiler_error(lexer, "String never terminated.");
+  }
+
+  c = '\0';
+  list_push(&ls, &c);
+
+  // ownership of ls.data goes to token
+  return token_create(&(Token){
+      .type = STRING,
+      .str = ls.data,
+  });
+}
 
 Token *token_read_next() {
   Token *t = NULL;
@@ -60,24 +107,27 @@ Token *token_read_next() {
   // check for lonely operators
   if (is_lonely_op(c)) {
     t = token_make_lonely_op(c);
-    return;
+    return t;
   }
   // check for non-lonely operators
   if (is_operator(c)) {
     t = token_make_operator(c);
-    return;
+    return t;
   }
 
   // check for non-lonely operators
   for (int i = 0; i < LONELY_OP_LEN; i++) {
     if (c != lonely_op[i]) continue;
     t = token_make_lonely_op(c);
-    return;
+    return t;
   }
-  // TODO:NEXT
-  // strings
 
   switch (c) {
+      // string
+    case '"': {
+      t = token_make_string('"', '"');
+      break;
+    }
     case ' ':
     case '\t': {
       // TODO make this more efficient
@@ -114,6 +164,8 @@ static bool is_lonely_op(char c) {
   return false;
 }
 
-static bool is_keyword(const char *str) {
-  // TODO
+static inline bool str_eq(const char *str1, const char *str2) {
+  return str1 && str2 && (strcmp(str1, str2) == 0);
 }
+
+// static bool is_keyword(const char *str) {}
