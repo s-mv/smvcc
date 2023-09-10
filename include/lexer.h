@@ -9,21 +9,10 @@
 
 typedef struct Lexer Lexer;
 
-// LexerFunctions functions
-typedef char (*LEX_PROCESS_NEXT_CHAR)(Lexer *lexer);
-typedef char (*LEX_PROCESS_PEEK_CHAR)(Lexer *lexer);
-typedef void (*LEX_PROCESS_PUSH_CHAR)(Lexer *lexer, char c);
-
 typedef enum LexerStatus {
   LEXER_OK = 0,
   LEXER_ERROR,
 } LexerStatus;
-
-typedef struct LexerFunctions {
-  LEX_PROCESS_NEXT_CHAR next_char;
-  LEX_PROCESS_PEEK_CHAR peek_char;
-  LEX_PROCESS_PUSH_CHAR push_char;
-} LexerFunctions;
 
 typedef struct Lexer {
   Position *pos;
@@ -37,22 +26,14 @@ typedef struct Lexer {
   // for now this is going to be a list
   List *paren_list;
 
-  LexerFunctions *function;
-
   // private data
   void *private;
 } Lexer;
 
-Lexer lexer_create(Compiler *compiler, LexerFunctions *fns, void *private_data);
+Lexer lexer_create(Compiler *compiler, void *private_data);
+LexerStatus lex(Lexer *l);
 void lexer_free(Lexer *l);
 
-LexerStatus lex(Lexer *l);
-
-char peek_char();
-char next_char();
-void push_char(char c);
-
-extern LexerFunctions default_lexer_fns;
 extern Lexer *lexer;
 
 #endif

@@ -30,7 +30,7 @@ CompilerStatus compile_file(const char *inpath, const char *outpath,
   Compiler *compiler = compiler_create(inpath, outpath, flags);
   if (!compiler) return COMPILER_ERROR;
 
-  Lexer lexer = lexer_create(compiler, &default_lexer_fns, NULL);
+  Lexer lexer = lexer_create(compiler, NULL);
   if (lex(&lexer) != LEXER_OK) {
     return COMPILER_ERROR;
   }

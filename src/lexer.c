@@ -4,14 +4,11 @@
 #include "list.h"
 #include "token.h"
 
-Lexer *lexer;
-
-char peek_char() { return lexer->function->peek_char(lexer); }
-char next_char() { return lexer->function->next_char(lexer); }
-void push_char(char c) { return lexer->function->push_char(lexer, c); }
-
 #define OPERATORS_LEN (13)
 #define LONELY_OP_LEN (8)
+
+Lexer *lexer = {0};
+static Token token = {0};
 
 // strictly non-lonely operators/operator constituents
 // NOTE: lacks / for a GOOD REASON
@@ -25,84 +22,87 @@ static char lonely_op[LONELY_OP_LEN] = {
     '(', ')', '[', '{', '}', '.', '*', '?',
 };
 
-static Token token;
+char lexer_peek_char();
+char lexer_next_char();
+void lexer_push_char(char c);
 
 static bool is_operator(char c);
 static bool is_lonely_op(char c);
 static inline bool str_eq(const char *str1, const char *str2);
 static bool is_keyword(const char *str);
 
-Token *token_create(Token *t) {
-  memcpy(&token, t, sizeof(Token));
-  t->pos = *lexer->pos;
-  return &token;
-}
+Token token_read_next();
 
-static Token *token_make_number() {
+static Token token_make_number();
+static Token token_make_operator(char op);
+static Token token_make_lonely_op(char op);
+static Token token_make_keyword(char *str);
+static Token token_make_comment_oneline();
+static Token token_make_comment_multiline();
+
+static Token token_make_number() {
   const char *num = NULL;
   List list = list_create(sizeof(char));
+  Token t = {0};
 
-  for (char c = next_char(); '0' <= c && c <= '9'; c = next_char()) {
+  for (char c = lexer_next_char(); '0' <= c && c <= '9';
+       c = lexer_next_char()) {
     list_push(&list, &c);
   }
   // now list->data contains a number that we assign to token
 
-  token_create(&token);
-
-  token.llnum = atoll((const char *)list.data);
+  t.llnum = atoll((const char *)list.data);
 
   list_free(&list);
-  return &token;
+  return t;
 }
 
 // TODO
-static Token *token_make_operator(char op) {
-  char c = next_char();
-  return NULL;
+static Token token_make_operator(char op) {
+  char c = lexer_next_char();
+  return NO_TOKEN;
 }
 
-static Token *token_make_lonely_op(char op) {
-  Token *t;
-  token_create(t);
-
-  t->type = SYMBOL;
+static Token token_make_lonely_op(char op) {
+  Token t = {0};
+  t.type = SYMBOL;
 
   return t;
 }
 
-static Token *token_make_keyword(char *str) { return NULL; }
+static Token token_make_keyword(char *str) { return NO_TOKEN; }
 
-static Token *token_make_comment_oneline() {
+static Token token_make_comment_oneline() {
   List ls = list_create(sizeof(char));
-  for (char c = next_char(); c != '\n' && c != EOF; c = next_char())
+  for (char c = lexer_next_char(); c != '\n' && c != EOF; c = lexer_next_char())
     ;
   // ownership of ls.data goes to token
-  return token_create(&(Token){.type = COMMENT, .str = ls.data});
+  return (Token){.type = COMMENT, .str = ls.data};
 }
 
-static Token *token_make_comment_multiline() {
+static Token token_make_comment_multiline() {
   List ls = list_create(sizeof(char));
   char c;
-  for (c = next_char(); c != EOF; c = next_char()) {
+  for (c = lexer_next_char(); c != EOF; c = lexer_next_char()) {
     if (c == '*') {
-      next_char();
-      if (peek_char() == '/') break;
+      lexer_next_char();
+      if (lexer_peek_char() == '/') break;
     }
   }
 
   if (c == EOF) {
     compiler_error(lexer, "Multiline comment left open.");
-    return NULL;  // the program will exit but eh common courtesy
+    return NO_TOKEN;  // the program will exit but eh common courtesy
   }
 
-  return token_create(&(Token){.type = COMMENT, .str = ls.data});
+  return (Token){.type = COMMENT, .str = ls.data};
 }
 
-static Token *token_make_string(char start, char end) {
+static Token token_make_string(char start, char end) {
   List ls = list_create(sizeof(char));
-  char c = next_char();
+  char c = lexer_next_char();
 
-  for (c = next_char(); c != end && c != EOF; c = next_char()) {
+  for (c = lexer_next_char(); c != end && c != EOF; c = lexer_next_char()) {
     if (c == '\\') {
       // handle an escape character (TODO)
       continue;
@@ -120,16 +120,13 @@ static Token *token_make_string(char start, char end) {
   list_push(&ls, &c);
 
   // ownership of ls.data goes to token
-  return token_create(&(Token){
-      .type = STRING,
-      .str = ls.data,
-  });
+  return (Token){.type = STRING, .str = ls.data};
 }
 
-Token *token_read_next() {
-  Token *t = NULL;
+Token token_read_next() {
+  Token t = {0};
   // last token
-  const char c = peek_char();
+  const char c = lexer_peek_char();
 
   // check for numbers
   if ('0' <= c && c <= '9') {
@@ -168,20 +165,19 @@ Token *token_read_next() {
       temp->whitespace = true;
     }
     case '/': {
-      char c = peek_char();
+      char c = lexer_peek_char();
       if (c == '/') {
-        next_char();
+        lexer_next_char();
         token_make_comment_oneline();
       } else if (c == '*') {
-        next_char();
+        lexer_next_char();
         token_make_comment_multiline();
       }
       break;
     }
     case '\n': {
-      next_char();
-      t = malloc(sizeof(Token));
-      t->type = NEWLINE;
+      lexer_next_char();
+      t.type = NEWLINE;
       break;
     }
     case EOF: {
@@ -202,9 +198,9 @@ LexerStatus lex(Lexer *l) {
   l->paren_list = NULL;
   lexer = l;
 
-  Token *token = token_read_next();
-  while (token) {
-    list_push(&l->tokens, token);
+  Token token = token_read_next();
+  while (token.type != NONE) {
+    list_push(&l->tokens, &token);
     token = token_read_next();
   }
 
@@ -213,48 +209,13 @@ LexerStatus lex(Lexer *l) {
 
 // the less imporant functions :)
 
-char lexer_next_char(Lexer *l) {
-  Compiler *compiler = l->compiler;
-
-  char c = getc(compiler->file.fp);
-  if (c == '\n') {
-    compiler->pos.line += 1;
-    compiler->pos.col = 1;
-  } else
-    compiler->pos.col += 1;
-
-  return c;
-}
-
-char lexer_peek_char(Lexer *l) {
-  Compiler *compiler = l->compiler;
-  char c = getc(compiler->file.fp);
-  // this is equivalent of uh... un-pop
-  ungetc(c, compiler->file.fp);
-  return c;
-}
-
-void lexer_push_char(Lexer *l, char c) {
-  Compiler *compiler = l->compiler;
-  ungetc(c, compiler->file.fp);  // so nifty!
-}
-
-LexerFunctions default_lexer_fns = (LexerFunctions){
-    .next_char = lexer_next_char,
-    .peek_char = lexer_peek_char,
-    .push_char = lexer_push_char,
-};
-
-Lexer lexer_create(Compiler *compiler, LexerFunctions *fns,
-                   void *private_data) {
+Lexer lexer_create(Compiler *compiler, void *private_data) {
   compiler->pos = (Position){.col = 1, .line = 1, .fname = compiler->file.path};
 
   return (Lexer){
-      .function = &default_lexer_fns,
       .tokens = list_create(sizeof(Token)),
       .compiler = compiler,
       .private = private_data,
-
       .pos = &compiler->pos,
   };
 }
@@ -267,6 +228,33 @@ void lexer_free(Lexer *l) {
   }
   list_free(&l->tokens);
 }
+
+char lexer_next_char() {
+  Compiler *compiler = lexer->compiler;
+  char c = getc(compiler->file.fp);
+  if (c == '\n') {
+    compiler->pos.line += 1;
+    compiler->pos.col = 1;
+  } else
+    compiler->pos.col += 1;
+
+  return c;
+}
+
+char lexer_peek_char() {
+  Compiler *compiler = lexer->compiler;
+  char c = getc(compiler->file.fp);
+  // this is equivalent of uh... un-pop
+  ungetc(c, compiler->file.fp);
+  return c;
+}
+
+void lexer_push_char(char c) {
+  Compiler *compiler = lexer->compiler;
+  ungetc(c, compiler->file.fp);  // so nifty!
+}
+
+// helpers
 
 static bool is_operator(char c) {
   for (int i = 0; i < LONELY_OP_LEN; i++) {

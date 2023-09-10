@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 typedef enum TokenType {
+  NONE,
   IDENTIFIER,
   OPERATOR,
   SYMBOL,
@@ -13,7 +14,6 @@ typedef enum TokenType {
   STRING,
   COMMENT,
   NEWLINE,  // mostly a helper
-  NONE,
 } TokenType;
 
 typedef struct Position {
@@ -44,6 +44,6 @@ typedef struct Token {
   const char* between_brackets;
 } Token;
 
-Token* token_read_next();
+#define NO_TOKEN ((Token){.type = NONE})
 
 #endif
