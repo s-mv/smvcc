@@ -1,6 +1,6 @@
 TITLE = smvcc
 
-CC = clang
+CC ?= clang
 
 OBJECTS = ./build/compiler.o \
 					./build/list.o \
@@ -9,10 +9,17 @@ OBJECTS = ./build/compiler.o \
 INCLUDES = -I ./include
 CLFAGS = -std=c11 -g
 
-# this is for the source-header pairs helper
-name = test
+TESTS_PATH = ./tests
 
-all: ${OBJECTS}
+# this is for the source-header pairs helper
+name = newfile
+
+default: test # for now
+
+test: ${OBJECTS}
+	@$(CC) src/main.c ${INCLUDES} ${OBJECTS} ${CLFAGS} -o ./$(TITLE).test -Dsmv_smvcc_tests
+
+production: ${OBJECTS}
 	@$(CC) src/main.c ${INCLUDES} ${OBJECTS} ${CLFAGS} -o ./$(TITLE)
 
 # build objects
@@ -22,6 +29,11 @@ all: ${OBJECTS}
 clean:
 	@rm ./$(TITLE)
 	@rm -rf ${OBJECTS}
+
+# testing
+
+./tests/bin/%: ./tests/%.c
+	$(CC) $< $(INCLUDES) $(CFLAGS) -o $@ -c
 
 # helper to make new source-header pairs
 new:

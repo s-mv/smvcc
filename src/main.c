@@ -1,9 +1,24 @@
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "compiler.h"
+#include "test.h"
 
 int main(int argc, char **argv) {
+#ifdef smv_smvcc_tests
+  // 100% TODO (well not 100% but most of it)
+
+  CompilerStatus success;
+
+  test("numeric lexing");
+  success =
+      compile_file("./tests/numeric_lexing.c", "./tests/bin/numeric_lexing", 0);
+
+  printf("Result: %d\n", success == COMPILER_OK);
+  endtest();
+#else
+
   // temporary
   // this isn't exactly good code but eh
   if (argc < 3) {
@@ -27,7 +42,7 @@ int main(int argc, char **argv) {
   }
   // ...otherwise
 
-  printf("wow this works!\n");
+#endif
 
   return 0;
 }

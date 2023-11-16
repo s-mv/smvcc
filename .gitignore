@@ -2,7 +2,4 @@ compile_commands.json
 .vscode/
 build/*
 smvcc
-
-# temporary
-test.c
-test
+smvcc.test
