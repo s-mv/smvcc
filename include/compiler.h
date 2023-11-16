@@ -10,13 +10,17 @@
 // the header will be included in the source file
 typedef struct Lexer Lexer;
 
+typedef enum CompilerFlags {
+  COMPILER_FLAG_NONE = 0,
+} CompilerFlags;
+
 typedef enum CompilerStatus {
   COMPILER_OK,
   COMPILER_ERROR,
 } CompilerStatus;
 
 typedef struct Compiler {
-  int flags;
+  CompilerFlags flags;
 
   Position pos;
   struct InputFile {
@@ -30,8 +34,9 @@ typedef struct Compiler {
 
 void compiler_error(Lexer *l, const char *message, ...);
 void compiler_warning(Lexer *l, const char *message, ...);
-CompilerStatus compile_file(const char *inpath, const char *outpath, int flags);
+CompilerStatus compile_file(const char *inpath, const char *outpath,
+                            CompilerFlags flags);
 Compiler *compiler_create(const char *inpath, const char *outpath,
-                                       int flags);
+                          CompilerFlags flags);
 
 #endif

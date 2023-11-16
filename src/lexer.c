@@ -6,6 +6,7 @@
 
 #define OPERATORS_LEN (13)
 #define LONELY_OP_LEN (8)
+#define KEYWORDS_LEN (32)
 
 Lexer *lexer = {0};
 static Token token = {0};
@@ -20,6 +21,14 @@ static char operators[OPERATORS_LEN] = {
 // a lonely operator is an operator which is ALWAYS single-character
 static char lonely_op[LONELY_OP_LEN] = {
     '(', ')', '[', '{', '}', '.', '*', '?',
+};
+const char *keywords[32] = {
+    "auto",     "break",  "case",    "char",   "const",    "continue",
+    "default",  "do",     "double",  "else",   "enum",     "extern",
+    "float",    "for",    "goto",    "if",     "int",      "long",
+    "register", "return", "short",   "signed", "sizeof",   "static",
+    "struct",   "switch", "typedef", "union",  "unsigned", "void",
+    "volatile", "while",
 };
 
 char lexer_peek_char();

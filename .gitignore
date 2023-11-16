@@ -1,5 +1,6 @@
 compile_commands.json
 .vscode/
 build/*
+tests/bin/*
 smvcc
 smvcc.test

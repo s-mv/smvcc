@@ -6,10 +6,10 @@
 
 typedef enum TokenType {
   NONE,
-  IDENTIFIER,
-  OPERATOR,
-  SYMBOL,
-  KEYWORD,
+  IDENTIFIER,  // TODO
+  OPERATOR,    // TODO
+  SYMBOL,      // TODO
+  KEYWORD,     // TODO
   NUMBER,
   STRING,
   COMMENT,

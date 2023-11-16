@@ -4,7 +4,8 @@
 
 #include "lexer.h"
 
-Compiler *compiler_create(const char *inpath, const char *outpath, int flags) {
+Compiler *compiler_create(const char *inpath, const char *outpath,
+                          CompilerFlags flags) {
   // read the file
   FILE *fp = fopen(inpath, "r");
   if (!fp) return NULL;
@@ -26,14 +27,12 @@ Compiler *compiler_create(const char *inpath, const char *outpath, int flags) {
 }
 
 CompilerStatus compile_file(const char *inpath, const char *outpath,
-                            int flags) {
+                            CompilerFlags flags) {
   Compiler *compiler = compiler_create(inpath, outpath, flags);
   if (!compiler) return COMPILER_ERROR;
 
   Lexer lexer = lexer_create(compiler, NULL);
-  if (lex(&lexer) != LEXER_OK) {
-    return COMPILER_ERROR;
-  }
+  if (lex(&lexer) != LEXER_OK) return COMPILER_ERROR;
 
   /* TODO */
   // parsing
@@ -54,7 +53,8 @@ CompilerStatus compile_file(const char *inpath, const char *outpath,
 }
 
 void compiler_error(Lexer *l, const char *message, ...) {
-  fprintf(stderr, "%s:%i:%i: error:\n", l->pos->fname, l->pos->line, l->pos->col);
+  fprintf(stderr, "%s:%i:%i: error:\n", l->pos->fname, l->pos->line,
+          l->pos->col);
 
   va_list args;
   va_start(args, message);
