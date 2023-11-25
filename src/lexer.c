@@ -3,6 +3,7 @@
 #include "compiler.h"
 #include "list.h"
 #include "token.h"
+#include "trie.h"
 
 #define OPERATORS_LEN (13)
 #define LONELY_OP_LEN (8)
@@ -30,6 +31,8 @@ const char *keywords[32] = {
     "struct",   "switch", "typedef", "union",  "unsigned", "void",
     "volatile", "while",
 };
+
+TrieNode *keywords_trie;
 
 char lexer_peek_char();
 char lexer_next_char();
@@ -79,7 +82,10 @@ static Token token_make_lonely_op(char op) {
   return t;
 }
 
-static Token token_make_keyword(char *str) { return NO_TOKEN; }
+static Token token_make_keyword(char *str) {
+  // TODO
+  return NO_TOKEN;
+}
 
 static Token token_make_comment_oneline() {
   List ls = list_create(sizeof(char));
@@ -206,6 +212,10 @@ LexerStatus lex(Lexer *l) {
   l->current_expr_count = 0;
   l->paren_list = NULL;
   lexer = l;
+
+  // init keyword trie
+  keywords_trie = trie_create();
+  trie_mass_insert(keywords_trie, keywords, KEYWORDS_LEN);
 
   Token token = token_read_next();
   while (token.type != NONE) {
