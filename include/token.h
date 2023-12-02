@@ -10,10 +10,10 @@ typedef enum TokenType {
   OPERATOR,    // TODO
   SYMBOL,      // TODO
   KEYWORD,     // TODO
-  NUMBER,
-  STRING,
-  COMMENT,
-  NEWLINE,  // mostly a helper
+  NUMBER,      // TODO
+  STRING,      // TODO
+  COMMENT,     // TODO
+  NEWLINE,     // mostly a helper
 } TokenType;
 
 typedef struct Position {
