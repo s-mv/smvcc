@@ -21,7 +21,6 @@ typedef enum TokenType {
 } TokenType;
 
 typedef struct Position {
-  char *file;
   int index;
   int line;
   int column;
@@ -38,6 +37,7 @@ typedef struct Token {
     void *any;
   };
   // width of relevant data e.g. width 4 TOKEN_INT = long
+  // this is majorly TODO and I might not even implement it
   int width;
   Position position;
 } Token;
@@ -50,6 +50,7 @@ typedef enum LexerStatus {
 } LexerStatus;
 
 typedef struct Lexer {
+  char *file;
   char *source;
   Position position;
   List tokens;

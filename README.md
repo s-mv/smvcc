@@ -1,4 +1,14 @@
 # smvcc
-A C compiler written in C, by smv.
+A subset (for now) of the C compiler. TODO everything, practically.
 
-Still TODO, by the end this will be a working C compiler!
+[Read the docs](./docs/introduction.md) for... docs. They include more than
+just documentation, but also my thinking process as well as I've tried to
+document it (haha see what I did there).
+
+# TODO
+- [ ] Compiler structure
+- [ ] Lexer and Preprocessor
+- [ ] Parser
+- [ ] Code generation
+- [ ] Error handling
+- [ ] Optimizations

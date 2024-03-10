@@ -78,3 +78,18 @@ void lex_operator() {}
 void lex_keyword() {}
 
 void lex_literal() {}
+
+/* this is where I say delusional stuff or as I like to call it, "brainstorming"
+ *
+ * a lexer may either have 2 passes
+ * 1. lex preprocessor directives as tokens
+ * 2. traverse token array and resolve directives
+ * (biggest con: conditional directives are redundant overhead)
+ * 
+ * or do it on the fly by lexing recursively and returning a pointer to the
+ * lexer (add TOKEN_FILE pointing to another lexer with different source) and on
+ * the go also make a registry of #define's
+ * (biggest con: I am mentally incapable of thinking of a clean implementation)
+ * 
+ * TODO eventually move comments like these into the docs
+ */
