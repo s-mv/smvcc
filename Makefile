@@ -18,10 +18,10 @@ name = newfile
 default: test # for now
 
 test: ${OBJECTS}
-	@$(CC) src/main.c ${INCLUDES} ${OBJECTS} ${CLFAGS} -o ./$(TITLE).test -Dsmv_smvcc_tests
+	@$(CC) main.c ${INCLUDES} ${OBJECTS} ${CLFAGS} -o ./$(TITLE).test -Dsmv_smvcc_tests
 
 production: ${OBJECTS}
-	@$(CC) src/main.c ${INCLUDES} ${OBJECTS} ${CLFAGS} -o ./$(TITLE)
+	@$(CC) main.c ${INCLUDES} ${OBJECTS} ${CLFAGS} -o ./$(TITLE)
 
 # build objects
 ./build/%.o: ./src/%.c
