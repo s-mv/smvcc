@@ -3,11 +3,46 @@
 
 #include <stdlib.h>
 
-#include "compiler.h"
 #include "list.h"
-#include "token.h"
 
-typedef struct Lexer Lexer;
+/* Token implementation */
+
+typedef enum TokenType {
+  TOKEN_NONE,
+  TOKEN_IDENTIFIER,  // TODO
+  TOKEN_OPERATOR,    // TODO
+  TOKEN_SYMBOL,      // TODO
+  TOKEN_KEYWORD,     // TODO
+  TOKEN_STRING,      // TODO
+  TOKEN_INT,         // TODO
+  TOKEN_FLOAT,       // TODO
+  TOKEN_COMMENT,     // TODO
+  TOKEN_NEWLINE,     // mostly a helper
+} TokenType;
+
+typedef struct Position {
+  int index;
+  int line;
+  int column;
+} Position;
+
+typedef struct Token {
+  TokenType type;
+  // union holds relevant data
+  union {
+    long integer;
+    double real;
+    char character;
+    char *string;
+    void *any;
+  };
+  // width of relevant data e.g. width 4 TOKEN_INT = long
+  // this is majorly TODO and I might not even implement it
+  int width;
+  Position position;
+} Token;
+
+#define NO_TOKEN ((Token){.type = TOKEN_NONE})
 
 typedef enum LexerStatus {
   LEXER_OK = 0,
@@ -15,25 +50,13 @@ typedef enum LexerStatus {
 } LexerStatus;
 
 typedef struct Lexer {
-  Position *pos;
+  char *file;
+  char *source;
+  Position position;
   List tokens;
-  Compiler *compiler;
-
-  // how many brackets deep are we?
-  // I don't want to waste time implementing a stack just yet
-  int current_expr_count;
-  // TODO define struct buffer (MAYBE)
-  // for now this is going to be a list
-  List *paren_list;
-
-  // private data
-  void *private;
 } Lexer;
 
-Lexer lexer_create(Compiler *compiler, void *private_data);
 LexerStatus lex(Lexer *l);
 void lexer_free(Lexer *l);
-
-extern Lexer *lexer;
 
 #endif

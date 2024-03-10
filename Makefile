@@ -2,10 +2,9 @@ TITLE = smvcc
 
 CC ?= clang
 
-OBJECTS = ./build/compiler.o \
-					./build/list.o \
-					./build/trie.o \
-					./build/lexer.o 
+OBJECTS = ./build/lexer.o \
+  ./build/parser.o \
+	./build/list.o 
 
 INCLUDES = -I ./include
 CLFAGS = -std=c11 -g
@@ -15,13 +14,15 @@ TESTS_PATH = ./tests
 # this is for the source-header pairs helper
 name = newfile
 
+.PHONY: clean test production new
+
 default: test # for now
 
 test: ${OBJECTS}
-	@$(CC) src/main.c ${INCLUDES} ${OBJECTS} ${CLFAGS} -o ./$(TITLE).test -Dsmv_smvcc_tests
+	@$(CC) main.c ${INCLUDES} ${OBJECTS} ${CLFAGS} -o ./$(TITLE).test -Dsmv_smvcc_tests
 
 production: ${OBJECTS}
-	@$(CC) src/main.c ${INCLUDES} ${OBJECTS} ${CLFAGS} -o ./$(TITLE)
+	@$(CC) main.c ${INCLUDES} ${OBJECTS} ${CLFAGS} -o ./$(TITLE)
 
 # build objects
 ./build/%.o: ./src/%.c
