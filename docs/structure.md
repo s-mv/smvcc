@@ -10,9 +10,9 @@ imaginary language, but I'm trying to avoid that.
 
 ## The Preprocessor - My Approach
 A lexer may either have 2 passes:
-1. lex preprocessor directives as tokens
-2. traverse token array and resolve directives
-(biggest con: conditional directives are redundant overhead)
+1. Lex preprocessor directives as tokens.
+2. Traverse token array and resolve directives.
+(Biggest con: conditional directives are redundant overhead.)
 
 ...Or preprocess on the fly by lexing recursively and returning a pointer to
 the lexer (add TOKEN_FILE pointing to another lexer with different source) and

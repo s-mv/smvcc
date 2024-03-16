@@ -53,11 +53,17 @@ typedef enum LexerStatus {
 typedef struct Lexer {
   char *file;
   char *source;
+  int srclen;
   Position position;
   List tokens;
 } Lexer;
 
+#define position_initial ((Position){.line = 1, .column = 1, .index = 0})
+
+// TODO: void lexer_init();
+
 LexerStatus lex(Lexer *l);
+void lexer_print(Lexer *l);
 void lexer_free(Lexer *l);
 
 #endif
