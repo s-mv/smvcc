@@ -36,6 +36,7 @@ void update_position(char c);
 void push_position();
 void pop_position();
 void print_token(Token token);
+void free_token(Token token);
 
 // I forgot what this kind of thing is called
 // let's call these "lexing stuff" for now
@@ -61,7 +62,11 @@ LexerStatus lex(Lexer *l) {
 }
 
 void lexer_free(Lexer *l) {
-  // TODO
+  for (int i = 0; i < lexer->tokens.len; i++) {
+    Token *token = list_at(&lexer->tokens, i);
+    free_token(*token);
+  }
+  list_free(&lexer->tokens);
 }
 
 // helpers implemented here
@@ -140,10 +145,6 @@ void lex_keyword() {
     char *keyword = keywords[i];
     int len = strlen(keyword);
 
-    char *word = malloc((len + 1) * sizeof(char));
-    strncpy(word, lexer->source + lexer->position.index, len);
-    word[len] = '\0';
-
     if (lexer->srclen - lexer->position.index < len) continue;
     if (strncmp(keyword, lexer->source + lexer->position.index, len - 1))
       continue;
@@ -209,6 +210,17 @@ void print_token(Token token) {
     case TOKEN_IDENTIFIER:
       printf("Identifier: [%-8s] -- (%-16s:%d:%d) \n", token.string,
              lexer->file, token.position.line, token.position.column);
+      break;
+    default:
+      break;
+  }
+}
+
+void free_token(Token token) {
+  switch (token.type) {
+    case TOKEN_IDENTIFIER:
+      printf("freeing idenfitier %s\n", token.string);
+      free(token.string);
       break;
     default:
       break;

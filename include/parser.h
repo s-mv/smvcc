@@ -14,6 +14,7 @@ typedef enum ParserStatus {
 } ParserStatus;
 
 typedef struct Parser {
+  Node *root;
 } Parser;
 
 ParserStatus parse(Parser *p);

@@ -16,7 +16,7 @@ name = newfile
 
 .PHONY: clean test production new
 
-default: test # for now
+default: production # for now
 
 test: ${OBJECTS}
 	@$(CC) main.c ${INCLUDES} ${OBJECTS} ${CLFAGS} -o ./$(TITLE).test -Dsmv_smvcc_tests

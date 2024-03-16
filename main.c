@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "lexer.h"
+#include "parser.h"
 
 #ifdef smv_smvcc_tests
 #define smv_testmv_enable
@@ -59,10 +60,18 @@ int main(int argc, char **argv) {
 
   lexer_print(&lexer);
 
+  Parser parser = {
+
+  };
+
+  lexer_free(&lexer);
+  parser_free(&parser);
+  free(buffer);
+
 #else
 // TODO: setup sane testing mechanism
 // testmv_session_start("lexer");
-// testmv_start("");
+// testmv_start("simple return");
 // testmv_end();
 // testmv_session_end();
 #endif
