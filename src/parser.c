@@ -1,13 +1,14 @@
 #include "parser.h"
 
-Parser *parser;
+Parser* parser;
 
-void advance();
+// helper functions
+static void advance();
 
-ParserStatus parse(Parser* p) {
-  parser = p;
-}
+ParserStatus parse(Parser* p) { parser = p; }
 
 void parser_free(Parser* p) {
   // TODO
 }
+
+void advance() {}

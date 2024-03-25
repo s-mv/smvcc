@@ -11,3 +11,7 @@ something that **works**, then build on top of that. The reason I have to note
 this down somewhere at all is because I am stubborn, and I forget. :P
 
 TODO, a LOT!
+
+Here are relevant links to other parts of the documentation:
+1. [structure](./structure.md)
+2. [grammar](./grammar.md)

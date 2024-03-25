@@ -25,27 +25,27 @@ Lexer *lexer;
 Position position;  // someday this will become a stack, who knows
 
 // helpers
-char peek();
-char next();
-void advance();
-bool is_alpha(char c);
-bool is_digit(char c);
-bool is_whitespace(char c);
-void update_position(char c);
+static char peek();
+static char next();
+static void advance();
+static bool is_alpha(char c);
+static bool is_digit(char c);
+static bool is_whitespace(char c);
+static void update_position(char c);
 // will these ever be needed? let's hope so
-void push_position();
-void pop_position();
-void print_token(Token token);
-void free_token(Token token);
+static void push_position();
+static void pop_position();
+static void print_token(Token token);
+static void free_token(Token token);
 
 // I forgot what this kind of thing is called
 // let's call these "lexing stuff" for now
-void lex_comment();  // single- and multi-line
-void lex_whitespace();
-void lex_number();
-void lex_operator();
-void lex_keyword();
-void lex_identifier();
+static void lex_comment();  // single- and multi-line
+static void lex_whitespace();
+static void lex_number();
+static void lex_operator();
+static void lex_keyword();
+static void lex_identifier();
 
 LexerStatus lex(Lexer *l) {
   lexer = l;
@@ -53,12 +53,14 @@ LexerStatus lex(Lexer *l) {
     lex_operator();
     lex_whitespace();
     lex_comment();
-    // lex_number(); // TODO
+    lex_number();  // TODO
     // if lex_keyword is run before lex_identifier we don't even need to check
     // whether lex_identifier is accidentally lexing a literal
     lex_keyword();
     lex_identifier();
   }
+
+  return LEXER_OK;
 }
 
 void lexer_free(Lexer *l) {
@@ -70,19 +72,21 @@ void lexer_free(Lexer *l) {
 }
 
 // helpers implemented here
-char peek() { return lexer->source[lexer->position.index]; }
-char next() { return lexer->source[lexer->position.index + 1]; }
-void advance() { update_position(lexer->source[++lexer->position.index]); }
+static char peek() { return lexer->source[lexer->position.index]; }
+static char next() { return lexer->source[lexer->position.index + 1]; }
+static void advance() {
+  update_position(lexer->source[++lexer->position.index]);
+}
 
-bool is_alpha(char c) {
+static bool is_alpha(char c) {
   // for all C knows `_` is an alphabet
   return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || c == '_';
 }
 
-bool is_digit(char c) { return '0' <= c && c <= '9'; }
-bool is_whitespace(char c) { return c == ' ' || c == '\n' || c == '\t'; }
+static bool is_digit(char c) { return '0' <= c && c <= '9'; }
+static bool is_whitespace(char c) { return c == ' ' || c == '\n' || c == '\t'; }
 
-void update_position(char c) {
+static void update_position(char c) {
   if (c == '\n') {
     lexer->position.line++;
     lexer->position.column = 1;
@@ -91,11 +95,11 @@ void update_position(char c) {
   lexer->position.column++;
 }
 
-void push_position() { position = lexer->position; }
-void pop_position() { lexer->position = position; }
+static void push_position() { position = lexer->position; }
+static void pop_position() { lexer->position = position; }
 
 // "lexing stuff" implemented here
-void lex_comment() {
+static void lex_comment() {
   if (peek() == '/') {
     if (next() == '/') {
       while (peek() != '\n' && peek() != '\0') advance();
@@ -115,14 +119,39 @@ void lex_comment() {
   }
 }
 
-void lex_whitespace() {
+static void lex_whitespace() {
   while (is_whitespace(peek())) advance();
 }
 
-// TODO, after barebones parser implementation
-void lex_number() {}
+// TODO list:
+// 1. parse float
+// 2. parse other bases
+static void lex_number() {
+  if (!is_digit(peek())) return;
 
-void lex_operator() {
+  push_position();
+  advance();
+
+  while (is_digit(next())) advance();
+
+  if (lexer->position.index == position.index) return;
+
+  // convert string to long long
+  const int len = lexer->position.index - position.index + 1;
+  char number_repr[len];
+  strncpy(number_repr, lexer->source + lexer->position.index - 1, len - 1);
+  number_repr[len] = '\0';
+
+  Token token = {
+      .type = TOKEN_INT,
+      .integer = atoll(number_repr),
+      .position = position,
+  };
+
+  list_push(&lexer->tokens, &token);
+}
+
+static void lex_operator() {
   char c = peek();
   bool is_operator = true;
   for (int i = 0; i < NUM_OPERATORS; i++) {
@@ -140,7 +169,7 @@ void lex_operator() {
   }
 }
 
-void lex_keyword() {
+static void lex_keyword() {
   for (int i = 0; i < NUM_KEYWORDS; i++) {
     char *keyword = keywords[i];
     int len = strlen(keyword);
@@ -168,7 +197,7 @@ void lex_keyword() {
   }
 }
 
-void lex_identifier() {
+static void lex_identifier() {
   if (!is_alpha(peek())) return;
 
   push_position();
@@ -200,17 +229,20 @@ void lexer_print(Lexer *l) {
 void print_token(Token token) {
   switch (token.type) {
     case TOKEN_OPERATOR:
-      printf("Operator:   [%-8c] -- (%-16s:%d:%d) \n", token.character,
+      printf("Operator:   [%-8c] -- (%-16s:%d:%d)\n", token.character,
              lexer->file, token.position.line, token.position.column);
       break;
     case TOKEN_KEYWORD:
-      printf("Keyword:    [%-8s] -- (%-16s:%d:%d) \n", token.string,
-             lexer->file, token.position.line, token.position.column);
+      printf("Keyword:    [%-8s] -- (%-16s:%d:%d)\n", token.string, lexer->file,
+             token.position.line, token.position.column);
       break;
     case TOKEN_IDENTIFIER:
-      printf("Identifier: [%-8s] -- (%-16s:%d:%d) \n", token.string,
-             lexer->file, token.position.line, token.position.column);
+      printf("Identifier: [%-8s] -- (%-16s:%d:%d)\n", token.string, lexer->file,
+             token.position.line, token.position.column);
       break;
+    case TOKEN_INT:
+      printf("Integer:    [%-8d] -- (%16s:%d:%d)\n", token.integer, lexer->file,
+             token.position.line, token.position.column);
     default:
       break;
   }
@@ -219,7 +251,6 @@ void print_token(Token token) {
 void free_token(Token token) {
   switch (token.type) {
     case TOKEN_IDENTIFIER:
-      printf("freeing idenfitier %s\n", token.string);
       free(token.string);
       break;
     default:

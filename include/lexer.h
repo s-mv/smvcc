@@ -31,7 +31,7 @@ typedef struct Token {
   TokenType type;
   // union holds relevant data
   union {
-    long integer;
+    long long integer;
     double real;
     char character;
     char *string;

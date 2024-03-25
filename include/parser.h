@@ -3,18 +3,14 @@
 
 #include "lexer.h"
 
-typedef struct Node {
-  struct Node *left;
-  struct Node *right;
-} Node;
-
 typedef enum ParserStatus {
   PARSER_OK = 0,
   PARSER_ERROR,
 } ParserStatus;
 
 typedef struct Parser {
-  Node *root;
+  Token previous;
+  Token current;
 } Parser;
 
 ParserStatus parse(Parser *p);
