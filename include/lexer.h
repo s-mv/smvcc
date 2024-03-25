@@ -17,7 +17,6 @@ typedef enum TokenType {
   TOKEN_INT,         // TODO
   TOKEN_FLOAT,       // TODO
   TOKEN_COMMENT,     // TODO
-  TOKEN_NEWLINE,     // mostly a helper
   TOKEN_INCLUDE,     // TODO, macro yay
 } TokenType;
 
