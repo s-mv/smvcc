@@ -3,13 +3,14 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#define NUM_OPERATORS (14)
+#define NUM_OPERATORS (13)
 #define NUM_KEYWORDS (32)
 
 // currently the compiler only addresses single-character operators
 // TODO: double-char operators
+// NOTE: / isn't included since it's also a part of `//`
 char operators[NUM_OPERATORS] = {
-    '+', '-', '*', '/', '&', '<', '>', '=', '(', ')', '{', '}', ';', ',',
+    '+', '-', '*', '&', '<', '>', '=', '(', ')', '{', '}', ';', ',',
 };
 
 char *keywords[NUM_KEYWORDS] = {
@@ -40,19 +41,21 @@ static void free_token(Token token);
 
 // I forgot what this kind of thing is called
 // let's call these "lexing stuff" for now
-static void lex_comment();  // single- and multi-line
 static void lex_whitespace();
-static void lex_number();
+static void lex_comment();  // single- and multi-line
 static void lex_operator();
+static void lex_string();
+static void lex_number();
 static void lex_keyword();
 static void lex_identifier();
 
 LexerStatus lex(Lexer *l) {
   lexer = l;
   while (peek() != '\0') {
-    lex_operator();
     lex_whitespace();
     lex_comment();
+    lex_operator();
+    lex_string();
     lex_number();  // TODO
     // if lex_keyword is run before lex_identifier we don't even need to check
     // whether lex_identifier is accidentally lexing a literal
@@ -99,6 +102,10 @@ static void push_position() { position = lexer->position; }
 static void pop_position() { lexer->position = position; }
 
 // "lexing stuff" implemented here
+static void lex_whitespace() {
+  while (is_whitespace(peek())) advance();
+}
+
 static void lex_comment() {
   if (peek() == '/') {
     if (next() == '/') {
@@ -119,13 +126,53 @@ static void lex_comment() {
   }
 }
 
-static void lex_whitespace() {
-  while (is_whitespace(peek())) advance();
+static void lex_operator() {
+  char c = peek();
+  bool is_operator = true;
+  for (int i = 0; i < NUM_OPERATORS; i++) {
+    if (c != operators[i]) continue;
+
+    Token token = {
+        .position = lexer->position,
+        .type = TOKEN_OPERATOR,
+        .character = c,
+    };
+
+    list_push(&lexer->tokens, &token);
+    advance();
+    return;
+  }
 }
 
 // TODO list:
-// 1. parse float
-// 2. parse other bases
+// 1. lex escape characters
+// 2. error handling
+static void lex_string() {
+  if (peek() != '"') return;
+
+  advance();
+  push_position();
+
+  while (peek() != '"') advance();
+
+  Token token = {
+      .type = TOKEN_STRING,
+      .position = position,
+  };
+
+  int len = lexer->position.index - position.index;
+  token.string = malloc((len + 1) * sizeof(char));  // ownership goes to `token`
+  strncpy(token.string, lexer->source + position.index, len);
+  token.string[len] = '\0';
+
+  list_push(&lexer->tokens, &token);
+
+  advance();  // eat the `"`
+}
+
+// TODO list:
+// 1. lex float
+// 2. lex other bases
 static void lex_number() {
   if (!is_digit(peek())) return;
 
@@ -149,24 +196,6 @@ static void lex_number() {
   };
 
   list_push(&lexer->tokens, &token);
-}
-
-static void lex_operator() {
-  char c = peek();
-  bool is_operator = true;
-  for (int i = 0; i < NUM_OPERATORS; i++) {
-    if (c != operators[i]) continue;
-
-    Token token = {
-        .position = lexer->position,
-        .type = TOKEN_OPERATOR,
-        .character = c,
-    };
-
-    list_push(&lexer->tokens, &token);
-    advance();
-    return;
-  }
 }
 
 static void lex_keyword() {
@@ -243,6 +272,11 @@ void print_token(Token token) {
     case TOKEN_INT:
       printf("Integer:    [%-8d] -- (%16s:%d:%d)\n", token.integer, lexer->file,
              token.position.line, token.position.column);
+      break;
+    case TOKEN_STRING:
+      printf("String:     [%.8s...] -- (%16s:%d:%d)\n", token.string,
+             lexer->file, token.position.line, token.position.column);
+      break;
     default:
       break;
   }

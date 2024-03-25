@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
-  char bytes = fread(buffer, sizeof(char), len, fp);
+  unsigned char bytes = fread(buffer, sizeof(char), len, fp);
 
   if (bytes != len) {
     fprintf(stderr, "Error reading file %s\n", argv[1]);
