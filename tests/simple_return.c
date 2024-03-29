@@ -6,6 +6,5 @@ int add(int x, int y) {
 }
 
 int main() {
-  printf("hello, world\n");
   return add(1, -1);
 }

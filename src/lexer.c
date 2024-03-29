@@ -63,6 +63,10 @@ LexerStatus lex(Lexer *l) {
     lex_identifier();
   }
 
+  Token end_token = {.type = TOKEN_END};
+
+  list_push(&lexer->tokens, &end_token);
+
   return LEXER_OK;
 }
 
@@ -270,7 +274,7 @@ void print_token(Token token) {
              token.position.line, token.position.column);
       break;
     case TOKEN_INT:
-      printf("Integer:    [%-8d] -- (%16s:%d:%d)\n", token.integer, lexer->file,
+      printf("Integer:    [%-8llu] -- (%16s:%d:%d)\n", token.integer, lexer->file,
              token.position.line, token.position.column);
       break;
     case TOKEN_STRING:

@@ -9,15 +9,15 @@
 
 typedef enum TokenType {
   TOKEN_NONE,
-  TOKEN_IDENTIFIER,  // TODO
-  TOKEN_OPERATOR,    // TODO
-  TOKEN_SYMBOL,      // TODO
-  TOKEN_KEYWORD,     // TODO
-  TOKEN_STRING,      // TODO
-  TOKEN_INT,         // TODO
-  TOKEN_FLOAT,       // TODO
-  TOKEN_COMMENT,     // TODO
-  TOKEN_INCLUDE,     // TODO, macro yay
+  TOKEN_IDENTIFIER,
+  TOKEN_OPERATOR,
+  TOKEN_SYMBOL,
+  TOKEN_KEYWORD,
+  TOKEN_STRING,
+  TOKEN_INT,
+  TOKEN_FLOAT,
+  TOKEN_INCLUDE,  // TODO, macro yay
+  TOKEN_END,      // TODO
 } TokenType;
 
 typedef struct Position {
