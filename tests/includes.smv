@@ -1,5 +1,4 @@
-#define TESTING
-#include "preprocessors.h"
+@include "preprocessors.smv"
 
 int main() {
   struct Person person = {.ID = "smv", .age = 0};

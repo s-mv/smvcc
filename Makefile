@@ -1,43 +1,34 @@
 TITLE = smvcc
 
-CC ?= clang
+CC = g++
 
-OBJECTS = ./build/lexer.o \
-  ./build/parser.o \
-	./build/list.o 
+OBJECTS = ./build/program.o ./build/lexer.o
 
 INCLUDES = -I ./include
-CLFAGS = -std=c11 -g
+CLFAGS = -std=c++11 -g
 
 TESTS_PATH = ./tests
-
-# this is for the source-header pairs helper
-name = newfile
 
 .PHONY: clean test production new
 
 default: production # for now
 
 test: ${OBJECTS}
-	@$(CC) main.c ${INCLUDES} ${OBJECTS} ${CLFAGS} -o ./$(TITLE).test -Dsmv_smvcc_tests
+	@$(CC) main.cpp ${INCLUDES} ${OBJECTS} ${CLFAGS} -o ./$(TITLE).test -Dsmv_smvcc_tests
 
 production: ${OBJECTS}
-	@$(CC) main.c ${INCLUDES} ${OBJECTS} ${CLFAGS} -o ./$(TITLE)
+	@$(CC) main.cpp ${INCLUDES} ${OBJECTS} ${CLFAGS} -o ./$(TITLE)
 
 # build objects
-./build/%.o: ./src/%.c
+./build/%.o: ./src/%.cpp
 	@$(CC) $< $(INCLUDES) ${CLFAGS} -o $@ -c
 
 clean:
 	@rm ./$(TITLE)
 	@rm -rf ${OBJECTS}
 
-# testing
-
-./tests/bin/%: ./tests/%.c
-	$(CC) $< $(INCLUDES) $(CFLAGS) -o $@ -c
-
 # helper to make new source-header pairs
+name = newfile
 new:
-	@printf "#ifndef smv_$(TITLE)_$(name)_h\n#define smv_$(TITLE)_$(name)_h\n\n\n#endif" > include/$(name).h
-	@printf "#include \"$(name).h\"" > src/$(name).c
+	@printf "#ifndef smv_$(TITLE)_$(name)_hpp\n#define smv_$(TITLE)_$(name)_hpp\n\n\n#endif" > include/$(name).hpp
+	@printf "#include \"$(name).hpp\"" > src/$(name).cpp
