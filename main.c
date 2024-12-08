@@ -61,7 +61,8 @@ int main(int argc, char **argv) {
   lexer_print(&lexer);
 
   Parser parser = {
-
+    .tokens = lexer.tokens,
+    .current = 0,
   };
 
   lexer_free(&lexer);

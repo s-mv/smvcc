@@ -1,5 +1,7 @@
 #include "parser.h"
 
+#include <stdio.h>
+
 Parser* parser;
 
 // helper functions
@@ -18,7 +20,7 @@ static void return_statement();
 ParserStatus parse(Parser* p) {
   parser = p;
   while (peek().type != TOKEN_END) {
-    
+    printf("H %d\n", peek().type);
   }
 }
 

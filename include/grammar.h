@@ -7,6 +7,7 @@
  * pain
  */
 
+#include "list.h"
 
 typedef struct Factor Factor;
 typedef struct Term Term;

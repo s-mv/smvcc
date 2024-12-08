@@ -262,20 +262,20 @@ void lexer_print(Lexer *l) {
 void print_token(Token token) {
   switch (token.type) {
     case TOKEN_OPERATOR:
-      printf("Operator:   [%-8c] -- (%-16s:%d:%d)\n", token.character,
+      printf("Operator:   [%-8c] -- (%16s:%d:%d)\n", token.character,
              lexer->file, token.position.line, token.position.column);
       break;
     case TOKEN_KEYWORD:
-      printf("Keyword:    [%-8s] -- (%-16s:%d:%d)\n", token.string, lexer->file,
+      printf("Keyword:    [%-8s] -- (%16s:%d:%d)\n", token.string, lexer->file,
              token.position.line, token.position.column);
       break;
     case TOKEN_IDENTIFIER:
-      printf("Identifier: [%-8s] -- (%-16s:%d:%d)\n", token.string, lexer->file,
+      printf("Identifier: [%-8s] -- (%16s:%d:%d)\n", token.string, lexer->file,
              token.position.line, token.position.column);
       break;
     case TOKEN_INT:
-      printf("Integer:    [%-8llu] -- (%16s:%d:%d)\n", token.integer, lexer->file,
-             token.position.line, token.position.column);
+      printf("Integer:    [%-8llu] -- (%16s:%d:%d)\n", token.integer,
+             lexer->file, token.position.line, token.position.column);
       break;
     case TOKEN_STRING:
       printf("String:     [%.8s...] -- (%16s:%d:%d)\n", token.string,

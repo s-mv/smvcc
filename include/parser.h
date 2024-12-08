@@ -24,7 +24,7 @@ typedef enum ParserStatus {
 typedef struct Parser {
   List tokens;
   Program AST;
-  void *current;
+  Token *current;
 } Parser;
 
 ParserStatus parse(Parser *p);

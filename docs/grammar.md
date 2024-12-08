@@ -2,30 +2,33 @@
 Or to be more precise, **grammar that has been implemented yet**.
 
 ```
-program
-    statement* 
+program: statement* ;
 
-statement
+statement:
     block
     | if
     | declaration
     | function
+    ;
 
-expression = factor (OP factor)*
+expression: factor (OP factor)* ;
 
-declaration = TYPE IDENTIFIER `(` arguments `)` `;`
+declaration: TYPE IDENTIFIER `(` arguments `)` `;` ;
 
-function = TYPE IDENTIFIER `(` arguments `)` `{` statement* `}`
+function: TYPE IDENTIFIER `(` arguments `)` `{` statement* `}` ;
 
-parameter = (IDENFIFIER | expression)
+parameter:
+    IDENFIFIER
+    | expression
+    ;
 
-parameters = parameter (, parameter)*
+parameters: parameter (, parameter)* ;
 
-argument = TYPE parameter
+argument: TYPE parameter ;
 
-arguments = argument (, argument)*
+arguments: argument (, argument)* ;
 
-call = IDENT `(` parameters `)`
+call: IDENT `(` parameters `)` ;
 
-return = `return` expression;
+return: `return` expression ;
 ```
