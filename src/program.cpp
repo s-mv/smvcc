@@ -3,7 +3,7 @@
 #include <fstream>
 
 Program::Program()
-    : first_source(NULL), last_source(NULL), lexer(Lexer(*this)) {}
+    : first_source(NULL), last_source(NULL), lexer(Lexer(this)) {}
 
 bool Program::add_file(std::string filename) {
   std::ifstream file(filename);
@@ -50,4 +50,8 @@ Program::~Program() {
 
 File *Program::get_source() { return first_source; }
 
-void Program::run() {}
+void Program::compile() {
+  lexer = Lexer(this);
+  lexer.lex();
+  lexer.print_tokens();
+}
