@@ -3,7 +3,8 @@
 #include <fstream>
 
 Program::Program()
-    : first_source(NULL), last_source(NULL), lexer(Lexer(this)) {}
+    : first_source(NULL), last_source(NULL), lexer(Lexer(this)),
+      parser(Parser()), table(SymbolTable()) {}
 
 bool Program::add_file(std::string filename) {
   std::ifstream file(filename);

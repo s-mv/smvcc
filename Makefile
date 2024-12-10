@@ -2,7 +2,7 @@ TITLE = smvcc
 
 CC = g++
 
-OBJECTS = ./build/program.o ./build/lexer.o
+OBJECTS = ./build/program.o ./build/lexer.o ./build/parser.o
 
 INCLUDES = -I ./include
 CLFAGS = -std=c++11 -g

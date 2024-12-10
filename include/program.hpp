@@ -4,6 +4,7 @@
 #include <string>
 
 #include "lexer.hpp"
+#include "parser.hpp"
 
 // binary encoded for absolutely no reason :D
 enum FileType {
@@ -26,11 +27,14 @@ struct File {
 class Program {
 private:
   Lexer lexer;
+  Parser parser;
 
 public:
   // later make these private
   File *first_source;
   File *last_source; // for convenience
+
+  SymbolTable table;
 
   Program();
   bool add_file(std::string filename);

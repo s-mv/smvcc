@@ -2,7 +2,15 @@
 Or to be more precise, **grammar that has been implemented so far**.
 
 ```
-program -> statement*;
+code -> statement*;
 
+statement -> assignment;
 
+assignment -> TYPE IDENT `=` expression;
+
+expression => term ('+' term)*;
+
+term => factor;
+
+factor => NUM | IDENT | '(' expression ')';
 ```
