@@ -2,6 +2,7 @@
 #define smv_smvcc_lexer_hpp
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 typedef class Program Program;
@@ -32,7 +33,22 @@ struct Symbol {
   // auto scope; // TODO
 };
 
-enum KeywordType {};
+// this took a long, long conversation with claude to finalize
+// if there's a better, more optimal way to deal with keywords such that parsing
+// isn't a pain, I don't know about it
+enum KeywordType {
+  TYPE_SPECIFIER,    // int, char, float, etc.
+  TYPE_QUALIFIER,    // const, volatile, etc.
+  STORAGE_SPECIFIER, // static, extern, register
+
+  CONTROL_FLOW,   // if, else, switch, etc.
+  LOOP_CONTROL,   // for, while, do
+  JUMP_STATEMENT, // break, continue, return
+
+  MEMORY_MANAGEMENT, // sizeof, malloc, free
+
+  DECLARATION_KEYWORD, // typedef, struct, union
+};
 
 struct Keyword {};
 
@@ -67,7 +83,12 @@ public:
   Lexer(Program *p);
   void lex(); // lex entire program
   void print_tokens();
+  std::vector<Token> *get_tokens();
   // ~Lexer();
 };
+
+// TODO, maybe make this a map
+// but then indexing would require strings
+extern const std::vector<std::pair<std::string, KeywordType>> keywords;
 
 #endif

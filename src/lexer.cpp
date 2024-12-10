@@ -6,43 +6,45 @@
 
 const std::vector<char> single_char_symbols = {
     '=',
+    '+',
     ';',
 };
 
 // this is so annoying
-const std::vector<std::string> keywords = {
-    // "auto",
-    // "break",
-    // "case",
-    // "char",
-    // "const",
-    // "continue",
-    // "default",
-    // "do",
-    // "double",
-    // "else",
-    // "enum",
-    // "extern",
-    // "float",
-    // "for",
-    // "goto",
-    // "if",
-    "int"
-    // "long",
-    // "register",
-    // "return",
-    // "short",
-    // "signed",
-    // "sizeof",
-    // "static",
-    // "struct",
-    // "switch",
-    // "typedef",
-    // "union",
-    // "unsigned",
-    // "void",
-    // "volatile",
-    // "while",
+const std::vector<std::pair<std::string, KeywordType>> keywords = {
+    {"int", TYPE_SPECIFIER},
+    // {"char", TYPE_SPECIFIER},
+    // {"float", TYPE_SPECIFIER},
+    // {"double", TYPE_SPECIFIER},
+    // {"void", TYPE_SPECIFIER},
+
+    // {"const", TYPE_QUALIFIER},
+    // {"volatile", TYPE_QUALIFIER},
+    // {"restrict", TYPE_QUALIFIER},
+
+    // {"static", STORAGE_SPECIFIER},
+    // {"extern", STORAGE_SPECIFIER},
+    // {"register", STORAGE_SPECIFIER},
+
+    // {"if", CONTROL_FLOW},
+    // {"else", CONTROL_FLOW},
+    // {"switch", CONTROL_FLOW},
+    // {"case", CONTROL_FLOW},
+
+    // {"for", LOOP_CONTROL},
+    // {"while", LOOP_CONTROL},
+    // {"do", LOOP_CONTROL},
+
+    // {"break", JUMP_STATEMENT},
+    // {"continue", JUMP_STATEMENT},
+    // {"return", JUMP_STATEMENT},
+
+    // {"sizeof", MEMORY_MANAGEMENT},
+
+    // {"typedef", DECLARATION_KEYWORD},
+    // {"struct", DECLARATION_KEYWORD},
+    // {"union", DECLARATION_KEYWORD},
+    // {"enum", DECLARATION_KEYWORD},
 };
 
 void Lexer::lex_file(File *file) {
@@ -93,7 +95,7 @@ void Lexer::lex_file(File *file) {
     //// lex keywords
     if (isalpha(current())) {
       for (int i = 0; i < keywords.size(); i++) {
-        std::string keyword = keywords.at(i);
+        std::string keyword = keywords.at(i).first;
         if (current_file->content.length() - position->index < keyword.length())
           continue;
 
@@ -117,7 +119,7 @@ void Lexer::lex_file(File *file) {
       int start = position->index;
 
       while (isalnum(next()) or peek() == '_')
-        advance();
+        ;
 
       int end = position->index;
       std::string ident = current_file->content.substr(start, end - start);
@@ -147,7 +149,8 @@ void Lexer::lex_file(File *file) {
       token.index = index;
       token.position = *position;
       tokens.push_back(token);
-      advance(ident.length());
+      std::cout << position->index << " `" << current() << "` " << ident
+                << std::endl;
     }
 
     //// everything else is just an error
@@ -194,7 +197,7 @@ void Lexer::print_tokens() {
   for (Token token : tokens) {
     switch (token.type) {
     case KEYWORD:
-      std::cout << "Keyword: " << keywords[token.index] << std::endl;
+      std::cout << "Keyword: " << keywords[token.index].first << std::endl;
       break;
 
     case IDENTIFIER:
@@ -215,3 +218,5 @@ void Lexer::print_tokens() {
     }
   }
 }
+
+std::vector<Token> *Lexer::get_tokens() { return &tokens; }

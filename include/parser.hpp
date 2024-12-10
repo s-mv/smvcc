@@ -33,16 +33,14 @@ struct Expression {
 };
 
 struct Assignment {
-  std::string identifier;
+  int identifier; // index of identifer in program's symbol table
   Expression expression;
 };
 
-enum StatementType {
-  ASSIGNMENT,
-};
-
 struct Statement {
-  StatementType type;
+  enum StatementType {
+    ASSIGNMENT,
+  } type;
   Assignment assignment;
 };
 
@@ -56,18 +54,21 @@ private:
   std::vector<Token> *tokens; // reminder: I don't like references
   int index;                  // token index
   Token current;
+  Code code;
 
   void advance();
   void consume(TokenType expected);
-  Code *parse_code();
-  Statement *parse_statement();
-  Assignment *parse_assignment();
-  Expression *parse_expression();
-  Factor *parse_factor();
+  void consume_keyword(KeywordType expected);
+  void consume_symbol(char expected);
+  Code parse_code();
+  Statement parse_statement();
+  Assignment parse_assignment();
+  Expression parse_expression();
+  Term parse_term();
+  Factor parse_factor();
 
 public:
-  Parser();
-  Parser(std::vector<Token> *tokens_);
+  Parser(Program *p,std::vector<Token> *tokens_);
   void parse();
   ~Parser();
 };
