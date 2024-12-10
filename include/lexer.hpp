@@ -21,14 +21,32 @@ struct Position {
   int index = 0;
 };
 
+enum DataType {
+  UNDEFINED,
+  INT_32,
+};
+
+struct Symbol {
+  std::string name;
+  DataType type;
+  // auto scope; // TODO
+};
+
+enum KeywordType {};
+
+struct Keyword {};
+
+typedef std::vector<Symbol> SymbolTable;
+
 struct Token {
   TokenType type;
   union {
     long long num;
+    unsigned long long unum;
     double fnum;
+    int index; // symbol/keyword index
     char character;
   };
-  std::string str;
   Position position;
 };
 

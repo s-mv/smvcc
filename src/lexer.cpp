@@ -92,7 +92,8 @@ void Lexer::lex_file(File *file) {
 
     //// lex keywords
     if (isalpha(current())) {
-      for (std::string keyword : keywords) {
+      for (int i = 0; i < keywords.size(); i++) {
+        std::string keyword = keywords.at(i);
         if (current_file->content.length() - position->index < keyword.length())
           continue;
 
@@ -105,11 +106,12 @@ void Lexer::lex_file(File *file) {
         Token token = Token();
         token.position = *position;
         token.type = KEYWORD;
-        token.str = keyword;
+        token.index = i;
         tokens.push_back(token);
         advance(keyword.length());
       }
     }
+
     //// lex identifiers
     if (isalpha(current()) or current() == '_') {
       int start = position->index;
@@ -119,10 +121,30 @@ void Lexer::lex_file(File *file) {
 
       int end = position->index;
       std::string ident = current_file->content.substr(start, end - start);
+      bool symtable_has_ident = false;
+      int index = program->table.size();
+
+      for (int i = 0; i < program->table.size(); i++) {
+        Symbol symbol = program->table.at(i);
+
+        if (symbol.name != ident)
+          continue;
+
+        symtable_has_ident = true;
+        index = i;
+        break;
+      }
+
+      if (!symtable_has_ident) {
+        Symbol symbol = Symbol();
+        symbol.name = ident;
+        symbol.type = UNDEFINED;
+        program->table.push_back(symbol);
+      }
 
       Token token = Token();
       token.type = IDENTIFIER;
-      token.str = ident;
+      token.index = index;
       token.position = *position;
       tokens.push_back(token);
       advance(ident.length());
@@ -172,11 +194,12 @@ void Lexer::print_tokens() {
   for (Token token : tokens) {
     switch (token.type) {
     case KEYWORD:
-      std::cout << "Keyword: " << token.str << std::endl;
+      std::cout << "Keyword: " << keywords[token.index] << std::endl;
       break;
 
     case IDENTIFIER:
-      std::cout << "Identifier: " << token.str << std::endl;
+      std::cout << "Identifier: " << program->table[token.index].name
+                << std::endl;
       break;
 
     case INT_LITERAL:
