@@ -53,7 +53,9 @@ Program::~Program() {
 File *Program::get_source() { return first_source; }
 
 void Program::compile() {
+  if (first_source == NULL)
+    return;
   lexer.lex();
   parser.parse();
-  // parser.print_ast();
+  parser.print_code();
 }

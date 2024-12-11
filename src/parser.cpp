@@ -10,19 +10,19 @@ Parser::Parser(Program *p, std::vector<Token> *tokens_)
 
 void Parser::advance() { current = tokens->at(index++); }
 
-void Parser::consume(TokenType expected) {
+void Parser::consume(const TokenType expected) {
   if (current.type == expected)
     advance(); // Consume the token.
   // else throw error TODO
 }
 
-void Parser::consume_keyword(KeywordType expected) {
+void Parser::consume_keyword(const KeywordType expected) {
   if (current.type == KEYWORD and keywords[current.index].second == expected)
     advance();
   // error TODO
 }
 
-void Parser::consume_symbol(char expected) {
+void Parser::consume_symbol(const char expected) {
   if (current.type == SYMBOL and current.character == expected)
     advance();
 }
@@ -43,15 +43,15 @@ Statement Parser::parse_statement() {
 
     statement.type = Statement::ASSIGNMENT;
     statement.assignment = parse_assignment();
+    consume_symbol(';');
   }
   return statement;
 }
 
 Assignment Parser::parse_assignment() {
   consume_keyword(TYPE_SPECIFIER);
-  int identifier;
-  advance();
   consume(IDENTIFIER);
+  int identifier = current.index;
   consume(SYMBOL);
   Expression expr = parse_expression();
   Assignment assignment = Assignment();
@@ -62,10 +62,11 @@ Assignment Parser::parse_assignment() {
 
 Expression Parser::parse_expression() {
   Expression expr = Expression();
-  expr.first = parse_term();
-  consume_symbol('+');
-  expr.second = parse_term();
-  expr.type = Expression::ADDITION;
+  expr.terms.push_back(parse_term());
+  while (current.type == SYMBOL and current.character == '+') {
+    expr.type = Expression::ADDITION;
+    expr.terms.push_back(parse_term());
+  }
   return expr;
 }
 
@@ -83,17 +84,18 @@ Factor Parser::parse_factor() {
     advance(); // Move to next token
   } else if (current.type == IDENTIFIER) {
     factor.type = Factor::IDENTIFIER;
+    factor.number = current.index;
     advance();
   } else if (current.type == SYMBOL and current.character == '(') {
     consume_symbol('(');
     factor.type = Factor::EXPRESSION;
     // I hate this 2.0
-    factor.expression = new Expression(parse_expression());
+    Expression *expression = new Expression(parse_expression());
+    factor.expression = std::move(expression);
     consume_symbol(')');
   } else {
     // TODO error
   }
-
   return factor;
 }
 
@@ -102,27 +104,55 @@ void Parser::parse() {
   code = parse_code();
 }
 
-Parser::~Parser() {
-  if (!program)
-    return;
+void Parser::print_code() {
+  std::cout << "Code:\n";
+  for (Statement statement : code.statements) {
+    print_statement(statement);
+  }
+}
 
-  for (auto &statement : code.statements) {
-    if (statement.type == Statement::ASSIGNMENT) {
-      Expression *expr = &statement.assignment.expression;
+void Parser::print_statement(const Statement statement) {
+  switch (statement.type) {
+  case Statement::ASSIGNMENT:
+    std::cout << "  Assignment: ";
+    print_assignment(statement.assignment);
+    break;
+    // Add more statement types as needed
+  }
+}
 
-      auto freeExpression = [](Expression *expression) {
-        if (expression->first.first.type == Factor::EXPRESSION) {
-          delete expression->first.first.expression;
-        }
+void Parser::print_assignment(const Assignment assignment) {
+  std::cout << program->table[assignment.identifier].name << " = ";
+  print_expression(assignment.expression);
+  std::cout << ";\n";
+}
 
-        if (expression->second.first.type == Factor::EXPRESSION) {
-          delete expression->second.first.expression;
-        }
+void Parser::print_expression(const Expression expression) {
+  if (expression.type == Expression::ADDITION)
+    std::cout << "(";
 
-        delete expression;
-      };
+  for (size_t i = 0; i < expression.terms.size(); ++i) {
+    if (i > 0)
+      std::cout << " + ";
+    print_term(expression.terms[i]);
+  }
 
-      freeExpression(expr);
-    }
+  if (expression.type == Expression::ADDITION)
+    std::cout << ")";
+}
+
+void Parser::print_term(const Term term) { print_factor(term.first); }
+
+void Parser::print_factor(const Factor factor) {
+  switch (factor.type) {
+  case Factor::NUMBER:
+    std::cout << factor.number;
+    break;
+  case Factor::IDENTIFIER:
+    std::cout << program->table[factor.number].name;
+    break;
+  case Factor::EXPRESSION:
+    print_expression(*factor.expression);
+    break;
   }
 }

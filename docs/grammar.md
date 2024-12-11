@@ -4,13 +4,13 @@ Or to be more precise, **grammar that has been implemented so far**.
 ```
 code -> statement*;
 
-statement -> assignment;
+statement -> assignment `;` ;
 
 assignment -> TYPE IDENT `=` expression;
 
-expression => term ('+' term)*;
+expression => term (`+` expression)?;
 
-term => factor;
+term => factor (`*` term)?;
 
 factor => NUM | IDENT | '(' expression ')';
 ```

@@ -5,9 +5,7 @@
 #include "program.hpp"
 
 const std::vector<char> single_char_symbols = {
-    '=',
-    '+',
-    ';',
+    '=', '+', '-', ';', '(', ')',
 };
 
 // this is so annoying
@@ -149,11 +147,9 @@ void Lexer::lex_file(File *file) {
       token.index = index;
       token.position = *position;
       tokens.push_back(token);
-      std::cout << position->index << " `" << current() << "` " << ident
-                << std::endl;
     }
 
-    //// everything else is just an error
+    //// everything else is just an error (except for whitespace)
     // TODO: error handling (in the far, far future)
   }
 }
