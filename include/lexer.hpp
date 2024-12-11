@@ -27,12 +27,6 @@ enum DataType {
   INT_32,
 };
 
-struct Symbol {
-  std::string name;
-  DataType type;
-  // auto scope; // TODO
-};
-
 // this took a long, long conversation with claude to finalize
 // if there's a better, more optimal way to deal with keywords such that parsing
 // isn't a pain, I don't know about it
@@ -50,7 +44,11 @@ enum KeywordType {
   DECLARATION_KEYWORD, // typedef, struct, union
 };
 
-struct Keyword {};
+struct Symbol {
+  std::string name;
+  DataType type;
+  // auto scope; // TODO
+};
 
 typedef std::vector<Symbol> SymbolTable;
 

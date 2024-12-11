@@ -4,8 +4,8 @@
 #include <iostream>
 
 Program::Program()
-    : first_source(NULL), last_source(NULL), lexer(Lexer(this)),
-      parser(Parser(this, lexer.get_tokens())), table(SymbolTable()) {}
+    : first_source(NULL), last_source(NULL), preprocessor(this), lexer(this),
+      parser(this, lexer.get_tokens()), table(SymbolTable()) {}
 
 bool Program::add_file(std::string filename) {
   std::ifstream file(filename);
@@ -55,6 +55,7 @@ File *Program::get_source() { return first_source; }
 void Program::compile() {
   if (first_source == NULL)
     return;
+  preprocessor.process();
   lexer.lex();
   parser.parse();
   parser.print_code();

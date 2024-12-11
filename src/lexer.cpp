@@ -5,7 +5,11 @@
 #include "program.hpp"
 
 const std::vector<char> single_char_symbols = {
-    '=', '+', '-', ';', '(', ')',
+    '=', '+', '-', '*', ';', '(', ')', '{', '}', '>', '<',
+};
+
+const std::vector<char[2]> double_char_symbols = {
+
 };
 
 // this is so annoying
