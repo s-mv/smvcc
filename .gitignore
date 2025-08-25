@@ -1,6 +1,4 @@
+.cache
 compile_commands.json
-.vscode/
+build/
 
-build/*
-!build
-smvcc*

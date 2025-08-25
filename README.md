@@ -1,14 +1,7 @@
 # smvcc
-Compiler for a C-like language.
-TODO everything, practically.
+C and some more.
 
-[Read the docs](./docs/introduction.md) for... docs. They include more than
-just documentation, but also my thinking process as well as I've tried to
-document it (haha see what I did there).
+An attempt... once again. Yeah.
 
-# TODO
-- [ ] Lexer and Macros
-- [ ] Parser
-- [ ] Code generation
-- [ ] Error handling
-- [ ] Optimizations
+TODO, everything.
+

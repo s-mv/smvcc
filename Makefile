@@ -1,34 +1,42 @@
-TITLE = smvcc
+TITLE   = smvcc
+# TODO, compile using smvcc
+CC      = clang
+CFLAGS  = -Wall -Wextra -Iinclude -g
 
-CC = g++
+SRC     = main.c src/lexer.c src/preprocessor.c
+BUILD   = build
+OBJ     = $(BUILD)/main.o $(BUILD)/lexer.o $(BUILD)/preprocessor.o
+BIN     = $(BUILD)/$(TITLE)
 
-OBJECTS = ./build/program.o ./build/lexer.o ./build/parser.o
+.PHONY: all dev test install clean
 
-INCLUDES = -I ./include
-CLFAGS = -std=c++11 -g
+all: $(BIN)
 
-TESTS_PATH = ./tests
+$(BIN): $(OBJ)
+	$(CC) $(CFLAGS) -o $@ $^
 
-.PHONY: clean test production new
+$(BUILD)/main.o: main.c
+	mkdir -p $(BUILD)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-default: production # for now
+$(BUILD)/lexer.o: src/lexer.c
+	mkdir -p $(BUILD)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-test: ${OBJECTS}
-	@$(CC) main.cpp ${INCLUDES} ${OBJECTS} ${CLFAGS} -o ./$(TITLE).test -Dsmv_smvcc_tests
+$(BUILD)/preprocessor.o: src/preprocessor.c
+	mkdir -p $(BUILD)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-production: ${OBJECTS}
-	@$(CC) main.cpp ${INCLUDES} ${OBJECTS} ${CLFAGS} -o ./$(TITLE)
+dev: all
+	./$(BIN)
 
-# build objects
-./build/%.o: ./src/%.cpp
-	@$(CC) $< $(INCLUDES) ${CLFAGS} -o $@ -c
+test: all
+	@echo "Testing is a TODO!"
+
+install: all
+	@echo "Installing $(BIN) to /usr/local/bin"
+	install -m 755 $(BIN) /usr/local/bin/
 
 clean:
-	@rm ./$(TITLE)
-	@rm -rf ${OBJECTS}
+	rm -rf $(BUILD)
 
-# helper to make new source-header pairs
-name = newfile
-new:
-	@printf "#ifndef smv_$(TITLE)_$(name)_hpp\n#define smv_$(TITLE)_$(name)_hpp\n\n\n#endif" > include/$(name).hpp
-	@printf "#include \"$(name).hpp\"" > src/$(name).cpp
